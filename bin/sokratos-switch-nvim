@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+echo -e 'Clearing nvim cache and...'
+
+rm -rf ~/.local/share/nvim
+rm -rf ~/.local/state/nvim
+rm -rf ~/.cache/nvim
+
+if [[ -d ${HOME}/.config/nvim_ancient ]]; then
+	echo -e 'Your bloated config is being restored'
+	mv ~/.config/nvim ~/.config/nvim_based
+	mv ~/.config/nvim_ancient ~/.config/nvim
+	bob use stable
+else
+	echo -e 'Reloading your BASED config!'
+	mv ~/.config/nvim ~/.config/nvim_ancient
+	mv ~/.config/nvim_based ~/.config/nvim
+	bob use nightly
+fi
