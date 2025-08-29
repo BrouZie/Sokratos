@@ -1,0 +1,15 @@
+export EDITOR="nvim"
+export SUDO_EDITOR="$EDITOR"
+
+# Pyenv setup
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+pyenv global system
+
+export NVIM_PATH="$HOME/.local/share/bob/nvim-bin/nvim"
+export PATH="$NVIM_PATH/bin:$PATH"
+
+# Golang setup
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"

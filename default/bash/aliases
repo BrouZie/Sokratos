@@ -1,0 +1,47 @@
+# File system
+if command -v eza >/dev/null; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lt='eza --tree --level=2 --long --icons --git'
+else
+  alias ls='ls --color=auto -lh'
+  alias lt='ls -lAh'
+fi
+alias lsa='ls -a'
+
+alias cd='zd'
+zd() {
+	if [ $# -eq 0 ]; then
+	  builtin cd ~ && return
+	elif [ -d "$1" ]; then
+	  builtin cd "$1"
+	else
+	  command -v z >/dev/null && z "$@" && printf " \U000F17A9 " && pwd || echo "Error: Directory not found"
+	fi
+}
+
+# Aliases for a better life
+alias nconf="cd ~/.config/nvim/ && nvim ."
+alias hyprconf="cd ~/.config/hypr/ && nvim ."
+alias svba="source venv/bin/activate"
+alias ff="fastfetch"
+alias grep='grep --color=auto'
+
+# View images
+alias icat="kitty +kitten icat"
+
+# Find packages
+alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S"
+alias pacmanf="pacman -Slq | fzf --multi --preview 'pacman -Sii {1}' --preview-window=down:75% | xargs -ro pacman -S"
+alias paruf="paru -Slq | fzf --multi --preview 'paru -Sii {1}' --preview-window=down:75% | xargs -ro paru -S"
+
+# "QoL" functions
+extract(){
+  local f="$1"; [[ -f $f ]] || { echo 'usage: extract <file>'; return 1; }
+  case "$f" in
+    *.tar.bz2) tar xjf "$f";; *.tar.gz) tar xzf "$f";; *.bz2) bunzip2 "$f";;
+    *.rar) unrar x "$f";; *.gz) gunzip "$f";; *.tar) tar xf "$f";;
+    *.tbz2) tar xjf "$f";; *.tgz) tar xzf "$f";; *.zip) unzip "$f";;
+    *.Z) uncompress "$f";; *.7z) 7z x "$f";; *) echo 'unknown format';;
+  esac
+}
+please(){ sudo "$(fc -ln -1)"; } # rerun last command with sudo

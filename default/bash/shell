@@ -1,0 +1,24 @@
+# History control
+shopt -s histappend cmdhist
+HISTCONTROL=ignoreboth:erasedups
+HISTSIZE=100000
+HISTFILESIZE="${HISTSIZE}"
+# Share history across shells live
+PROMPT_COMMAND='history -a; history -n; '"$PROMPT_COMMAND"
+
+# Autocompletion
+if [[ ! -v BASH_COMPLETION_VERSINFO && -f /usr/share/bash-completion/bash_completion ]]; then
+  source /usr/share/bash-completion/bash_completion
+fi
+
+# ===== PATH hygiene =====
+# helper: append path if missing
+pathmunge() { case ":$PATH:" in *":$1:") ;; *) export PATH="$PATH:$1";; esac; }
+# keep user bins ahead of system, but avoid leading ./ for security
+pathmunge "$HOME/.local/bin"
+pathmunge "$HOME/.config/sokratos/bin"
+pathmunge "$HOME/.config/Sploodge/bin"
+# pathmunge "$HOME/.local/share/sokratos/bin"
+
+# Ensure command hashing is ON
+set -h

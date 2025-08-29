@@ -1,0 +1,52 @@
+force_color_prompt=yes
+color_prompt=yes
+
+# Function to get current git branch
+git_branch() {
+    git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+# Function to show virtual environment
+venv_info() {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        echo "(venv) "
+    fi
+}
+
+# Function to set up the prompt
+set_prompt() {
+    local last_status=$?
+    local reset='\[\033[0m\]'
+    local black='\[\033[30m\]'
+    local red='\[\033[31m\]'
+    local green='\[\033[32m\]'
+    local yellow='\[\033[33m\]'
+    local blue='\[\033[34m\]'
+    local magenta='\[\033[35m\]'
+    local cyan='\[\033[36m\]'
+    local white='\[\033[37m\]'
+    local bright_black='\[\033[90m\]'
+    local bright_red='\[\033[91m\]'
+    local bright_green='\[\033[92m\]'
+    local bright_yellow='\[\033[93m\]'
+    local bright_blue='\[\033[94m\]'
+    local bright_magenta='\[\033[95m\]'
+    local bright_cyan='\[\033[96m\]'
+    local bright_white='\[\033[97m\]'
+
+    # Top line with venv, path, and git branch
+    PS1="${cyan}\$(venv_info)${blue}\w${green}\$(git_branch)${reset}\n"
+    
+    # Bottom line with arrow (red if last command failed)
+    if [ $last_status -eq 0 ]; then
+        PS1+="${bright_magenta}❯ ${reset}"
+    else
+        PS1+="${red}❯ ${reset}"
+    fi
+}
+
+# Set PROMPT_COMMAND to update PS1 before each prompt
+PROMPT_COMMAND=set_prompt
+
+# Configure PS2 for multiline commands (EOF)
+PS2="❯❯ "
