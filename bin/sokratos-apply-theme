@@ -9,15 +9,17 @@ fi
 IMAGE="$1"
 
 # Send notification to the user
-notify-send "Changing Theme" "Applying new wallpaper and updating colors, please wait until confirmation..."
+# notify-send "Changing Theme" "Applying new wallpaper and updating colors, please wait until confirmation..."
 
 # Set wallpaper
-swww img "$IMAGE" --transition-type="center" --transition-step=1 --transition-fps="60"
+swww img "$IMAGE"
 
-# wallust run "$IMAGE"
 # Use Matugen to generate Material You colors
+# wallust run "$IMAGE"
+# matugen image "$IMAGE"
 matugen image "$IMAGE"
 # Use wallust to generate colors for terminal
+pywalfox update
 
 # Refresh swaync
 pkill swaync
@@ -27,4 +29,5 @@ swaync > /dev/null 2>&1 &
 pkill waybar
 waybar > /dev/null 2>&1 &
 
+# kill -SIGUSR1 $(pidof kitty)
 notify-send "Theme Applied" "Wallpaper and theme updated successfully!"
