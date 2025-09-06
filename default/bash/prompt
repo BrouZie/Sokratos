@@ -34,8 +34,10 @@ set_prompt() {
     local bright_cyan='\[\033[96m\]'
     local bright_white='\[\033[97m\]'
 
+# Add newline before prompt
+		PS1='\n'
     # Top line with venv, path, and git branch
-    PS1="${cyan}\$(venv_info)${blue}\w${green}\$(git_branch)${reset}\n"
+    PS1="${PS1}${cyan}\$(venv_info)${blue}\w${green}\$(git_branch)${reset}\n"
     
     # Bottom line with arrow (red if last command failed)
     if [ $last_status -eq 0 ]; then
