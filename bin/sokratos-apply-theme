@@ -8,17 +8,13 @@ fi
 
 IMAGE="$1"
 
-# Send notification to the user
-# notify-send "Changing Theme" "Applying new wallpaper and updating colors, please wait until confirmation..."
-
 # Set wallpaper
 swww img "$IMAGE"
 
-# Use Matugen to generate Material You colors
-# wallust run "$IMAGE"
-# matugen image "$IMAGE"
+# Generate matugen colors
 matugen image "$IMAGE"
-# Use wallust to generate colors for terminal
+sleep 0.4
+
 pywalfox update
 
 # Refresh swaync
@@ -29,5 +25,47 @@ swaync > /dev/null 2>&1 &
 pkill waybar
 waybar > /dev/null 2>&1 &
 
-# kill -SIGUSR1 $(pidof kitty)
-notify-send "Theme Applied" "Wallpaper and theme updated successfully!"
+# Image analysis variables
+PRIMARY_HEX=$(<~/.cache/matugen/primary-hex.txt)
+COLOR1=$(pastel format name $PRIMARY_HEX)
+SHADE=$(magick "$IMAGE" \
+  -alpha remove -alpha off -colorspace Gray \
+  -format "%[fx:mean]" info: | awk '{print ($1<0.35)?"dark":"light"}'
+)
+
+THEMES_DIR="$HOME/.local/share/sokratos/themes"
+CURRENT_THEME_DIR="$HOME/.config/sokratos/current/theme/colors.conf"
+
+set_theme() {
+	local theme="$1"
+	notify-send "$SHADE $COLOR1: $theme"
+	ln -nsf "$THEMES_DIR/$theme/colors.conf" "$CURRENT_THEME_DIR"
+}
+
+# Change kitty pallete based on image analysis
+case "$SHADE $COLOR1" in
+  "dark lightsteelblue")  set_theme nord ;;
+  "light lightsteelblue") set_theme tokyonight ;;
+
+  # Shade-agnostic: any SHADE + color
+  *" lightsalmon")        set_theme gruvbox ;;
+  *" lightskyblue")       set_theme everforest ;;
+  *" skyblue")            set_theme nord ;;
+  *" plum")               set_theme catppuccin ;;
+  *" powderblue")         set_theme everforest ;;
+  *" darkkhaki")          set_theme rosepine ;;
+
+  # Different theme per shade for same color
+  "light lightpink")      set_theme rosepine ;;
+  "dark lightpink")       set_theme nightfox ;;
+
+  # Example: two different choices based on shade
+  "light darkseagreen")   set_theme everforest ;;
+  "dark darkseagreen")    set_theme gruvbox ;;
+
+  # Fallback
+  *) notify-send "$SHADE $COLOR1" && sokratos-themes &&  exit 0 ;;
+esac
+
+# Refresh kitty
+pkill -SIGUSR1 kitty

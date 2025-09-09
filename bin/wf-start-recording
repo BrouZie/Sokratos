@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Ensure the recordings directory exists
+mkdir -p "$HOME/Videos/recordings"
+
+# Generate a timestamped filename
+OUTFILE="$HOME/Videos/recordings/$(date '+%Y-%m-%d_%H-%M-%S').mp4"
+
+# Start recording in background
+wf-recorder --audio --framerate 60 -f "$OUTFILE" &
+
+# Record the PID so we can stop it
+echo $! > "$HOME/.cache/wf-recorder.pid"
+
+# Notification
+notify-send "Screen recording started" "$OUTFILE"

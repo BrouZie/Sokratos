@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# Color classification thresholds (0-255)
+RED_THRESHOLD=150
+GREEN_THRESHOLD=150
+BLUE_THRESHOLD=150
+YELLOW_RED_MIN=180
+YELLOW_GREEN_MIN=180
+YELLOW_BLUE_MAX=180
+
+classify_color() {
+    local r=$1
+    local g=$2
+    local b=$3
+
+    # Determine dominant color based on thresholds
+    if [ "$r" -ge "$YELLOW_RED_MIN" ] && [ "$g" -ge "$YELLOW_GREEN_MIN" ] && [ "$b" -le "$YELLOW_BLUE_MAX" ] && [ "$r" -gt "$b" ] && [ "$g" -gt "$b" ]; then
+        color="yellow"
+				ln -nsf ~/.local/share/sokratos/themes/gruvbox/colors.conf ~/.config/sokratos/current/theme/colors.conf
+    elif [ "$r" -ge "$RED_THRESHOLD" ] && [ "$r" -gt "$g" ] && [ "$r" -gt "$b" ]; then
+        color="red"
+				ln -nsf ~/.local/share/sokratos/themes/nord/colors.conf ~/.config/sokratos/current/theme/colors.conf
+    elif [ "$g" -ge "$GREEN_THRESHOLD" ] && [ "$g" -gt "$r" ] && [ "$g" -gt "$b" ]; then
+        color="green"
+				ln -nsf ~/.local/share/sokratos/themes/everforest/colors.conf ~/.config/sokratos/current/theme/colors.conf
+    elif [ "$b" -ge "$BLUE_THRESHOLD" ] && [ "$b" -gt "$r" ] && [ "$b" -gt "$g" ]; then
+        color="blue"
+				ln -nsf ~/.local/share/sokratos/themes/rosepine/colors.conf ~/.config/sokratos/current/theme/colors.conf
+    else
+        color="other"
+				ln -nsf ~/.local/share/sokratos/themes/gruvbox/colors.conf ~/.config/sokratos/current/theme/colors.conf
+    fi
+
+    # Use case statement to output the result
+    case "$color" in
+			# nord
+        "red")
+            notify-send "red"
+            ;;
+			# everforest
+        "green")
+            notify-send "green"
+            ;;
+			# rosepine
+        "blue")
+            notify-send "blue"
+            ;;
+			# gruvbox
+        "yellow")
+            notify-send "yellow"
+            ;;
+        "other")
+            notify-send "other"
+            ;;
+    esac
+}
+
+# Parse rgb(R, G, B) format
+values=$(echo "$1" | sed 's/rgb(//' | sed 's/)//' | tr ',' ' ')
+read -a rgb_values <<< "$values"
+
+classify_color "${rgb_values[0]}" "${rgb_values[1]}" "${rgb_values[2]}"

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# This script uses pastel to classify colornames generated from matugen
+
+PRIMARY_HEX=$(<~/.cache/matugen/primary-hex.txt)
+
+COLOR1=$(pastel format name $PRIMARY_HEX)
+
+case "$COLOR1" in
+	lightsteelblue) notify-send "$COLOR1 nord|tokyonight" 
+	;;
+	lightsalmon) notify-send "$COLOR1 gruvbox"
+	;;
+	lightpink) notify-send "$COLOR1 rosepine|nightfox"
+	;;
+	lightskyblue) notify-send "$COLOR1 everforest"
+	;;
+  skyblue) notify-send "slightly different blue: $COLOR1 -- nord maybe??"
+	;;
+  plum) notify-send "$COLOR1 catppuccin"
+	;;
+  darkseagreen) notify-send "$COLOR1 maybe everforest|gruvbox"
+	;;
+  powderblue) notify-send "$COLOR1 |everforest"
+	;;
+  darkkhaki) notify-send "$COLOR1 rosepine"
+	;; 
+	*) notify-send "haven't seen $COLOR1 before find colorscheme"
+esac

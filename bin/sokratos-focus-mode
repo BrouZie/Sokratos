@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-swww img ~/Pictures/wallpaper/mini_dark.jpg --transition-type="none" --transition-step=1 --transition-fps="60"
-matugen image ~/Pictures/wallpaper/mini_dark.jpg -m dark
+# Focus mode for Hyprland
+# Disables animations, gaps, rounded corners, shadows, and blur
+# Kills waybar to reduce distractions
 
-	# keyword animations:enabled 0;\
 hyprctl --batch "\
 	keyword general:gaps_in 0;\
 	keyword general:gaps_out 0;\
 	keyword general:gaps_out 0;\
-	keyword decoration:rounding 0"
+	keyword decoration:rounding 0;\
+	keyword decoration:shadow:enabled 0;\
+	keyword decoration:blur:enabled 0"
 pkill -9 waybar
-pywalfox update

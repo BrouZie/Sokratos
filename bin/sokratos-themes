@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+THEMES_DIR="$HOME/.local/share/sokratos/themes"
+CURRENT_THEME_DIR="$HOME/.config/sokratos/current/theme/colors.conf"
+
+notify-send 'Specify which colorscheme you want'
+
+CWD="$(pwd)"
+
+cd $THEMES_DIR || exit 1
+
+SELECTED_THEME=$(for theme in *; do echo -en "$theme\0icon\x1f$theme\n" ; done | rofi -dmenu -p "")
+
+if [ -n "$SELECTED_THEME" ]; then
+	ln -nsf "$THEMES_DIR"/"$SELECTED_THEME"/colors.conf "$CURRENT_THEME_DIR"
+fi
+
+pkill -SIGUSR1 kitty
+
+cd "$CWD" || exit 1

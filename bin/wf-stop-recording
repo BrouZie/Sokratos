@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Stop wf-recorder if it's running
+
+PIDFILE="$HOME/.cache/wf-recorder.pid"
+
+if [[ -f $PIDFILE ]]; then
+  pid=$(<"$PIDFILE")
+  kill -SIGINT "$pid"       # gracefully stop recording
+  rm "$PIDFILE"
+  notify-send "Screen recording stopped"
+else
+  notify-send "No wf-recorder process found"
+fi

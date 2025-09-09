@@ -1,0 +1,12 @@
+# ~/.bashrc
+source ~/.local/share/sokratos/default/bash/rc
+
+alias sshpi='ssh pi@192.168.11.102'
+
+# Ollama project
+bind -x '"\C-g": sploodge'
+. "/home/brouzie/.local/share/bob/env/env.sh"
+
+alias ros-up='cd ~/workspace/containers/ros2_ws && xhost +si:localuser:$(id -un) && docker compose up -d'
+alias rossh='cd ~/workspace/containers/ros2_ws && docker compose exec ros bash'
+alias ros-down='cd ~/workspace/containers/ros2_ws && xhost -si:localuser:$(id -un) && docker compose down'
