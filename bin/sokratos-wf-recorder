@@ -1,0 +1,335 @@
+#!/usr/bin/env bash
+# ~/.local/bin/sokratos-advanced-record
+# Advanced screen recorder with rich options
+
+set -Eeuo pipefail
+
+# Configuration
+DEFAULT_DIR="${HOME}/Videos/recordings"
+DEFAULT_FPS="30"
+LOCK_FILE="/tmp/sokratos-recording.lock"
+STATE_FILE="/tmp/sokratos-recording.state"
+
+# Codec options with descriptions
+declare -A CODECS=(
+  ["h264_vaapi"]="H.264 (AMD GPU - Best Balance)"
+  ["hevc_vaapi"]="H.265/HEVC (AMD GPU - Better Compression)"
+  ["libx264"]="H.264 (CPU - Compatible)"
+  ["libx265"]="H.265 (CPU - High Quality)"
+)
+
+# Quality presets
+declare -A QUALITY_PRESETS=(
+  ["ultrafast"]="Ultrafast (Largest file, lowest CPU)"
+  ["superfast"]="Superfast (Large file, low CPU)"
+  ["veryfast"]="Very Fast (Good balance)"
+  ["faster"]="Faster (Better quality)"
+  ["fast"]="Fast (Good quality)"
+  ["medium"]="Medium (Best balance)"
+  ["slow"]="Slow (High quality)"
+  ["slower"]="Slower (Higher quality)"
+  ["veryslow"]="Very Slow (Highest quality)"
+)
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || {
+    echo "Missing dependency: $1" >&2
+    exit 1
+  }
+}
+
+need wf-recorder
+need gum
+need hyprctl
+need slurp
+
+# Check if already recording
+if [[ -f "$LOCK_FILE" ]]; then
+  gum style --foreground 196 --bold "Recording already in progress!"
+  gum style "Use sokratos-stop-record to stop the current recording."
+  exit 1
+fi
+
+# Launch in floating terminal if not already in one
+if [[ "${KITTY_WINDOW_ID:-}" != *"kitty-float"* && "${1:-}" != "--no-float" ]]; then
+  CLASS="kitty-float"
+  W="80%"
+  H="70%"
+  
+  hyprctl dispatch exec "[float; size $W $H] \
+    kitty --class $CLASS --title 'Sokratos Advanced Recorder' \
+    --hold bash -c 'exec $0 --no-float'"
+  exit 0
+fi
+
+# Welcome header
+gum style \
+  --foreground 39 --bold --margin "1 0" --padding "1 2" \
+  --border double --border-foreground 39 \
+  "🎬 SOKRATOS ADVANCED SCREEN RECORDER 🎬"
+
+# Collect monitors
+mapfile -t MONS < <(hyprctl monitors | awk '/^Monitor /{print $2}')
+if ((${#MONS[@]} == 0)); then
+  gum style --foreground 196 "No monitors found via hyprctl."
+  exit 1
+fi
+
+# Prefer DP-3 as default
+DEFAULT_MON="DP-3"
+if ! printf '%s\n' "${MONS[@]}" | grep -qx "$DEFAULT_MON"; then
+  DEFAULT_MON="${MONS[0]}"
+fi
+
+# === RECORDING MODE SELECTION ===
+gum style --bold --margin "1 0 1 0" --foreground 226 "📺 RECORDING MODE"
+RECORD_MODE="$(gum choose --selected "Full Monitor" \
+  "Full Monitor" \
+  "Region Selection" \
+  "Active Window")"
+
+REGION_OPTS=""
+case "$RECORD_MODE" in
+  "Full Monitor")
+    gum style --bold --margin "1 0 0 0" "Choose monitor:"
+    MONITOR="$(gum choose --selected "$DEFAULT_MON" "${MONS[@]}")"
+    [[ -n "${MONITOR:-}" ]] || { echo "No monitor selected."; exit 1; }
+    ;;
+  "Region Selection")
+    gum style --bold --margin "1 0 0 0" "Select region with mouse..."
+    REGION=$(slurp) || { echo "Region selection cancelled."; exit 1; }
+    REGION_OPTS="-g $REGION"
+    MONITOR="region"
+    ;;
+  "Active Window")
+    gum style --bold --margin "1 0 0 0" "Click on window to record..."
+    REGION=$(slurp -w) || { echo "Window selection cancelled."; exit 1; }
+    REGION_OPTS="-g $REGION"
+    MONITOR="window"
+    ;;
+esac
+
+# === CODEC SELECTION ===
+gum style --bold --margin "1 0 1 0" --foreground 82 "🚀 CODEC & QUALITY"
+
+# Build codec options with descriptions
+CODEC_OPTIONS=()
+for codec in "${!CODECS[@]}"; do
+  CODEC_OPTIONS+=("$codec (${CODECS[$codec]})")
+done
+
+CODEC_CHOICE="$(gum choose --selected "h264_vaapi (${CODECS[h264_vaapi]})" "${CODEC_OPTIONS[@]}")"
+CODEC="${CODEC_CHOICE%% *}"  # Extract just the codec name
+
+# Quality preset selection
+gum style --bold --margin "1 0 0 0" "Quality preset:"
+PRESET_OPTIONS=()
+for preset in "${!QUALITY_PRESETS[@]}"; do
+  PRESET_OPTIONS+=("$preset (${QUALITY_PRESETS[$preset]})")
+done
+
+PRESET_CHOICE="$(gum choose --selected "veryfast (${QUALITY_PRESETS[veryfast]})" "${PRESET_OPTIONS[@]}")"
+PRESET="${PRESET_CHOICE%% *}"
+
+# === RECORDING SETTINGS ===
+gum style --bold --margin "1 0 1 0" --foreground 198 "⚙️  RECORDING SETTINGS"
+
+# FPS Selection
+gum style --bold --margin "1 0 0 0" "Frame rate (FPS):"
+FPS_CHOICE="$(gum choose --selected "$DEFAULT_FPS" \
+  "24" "30" "48" "60" "120" "Custom")"
+
+if [[ "$FPS_CHOICE" == "Custom" ]]; then
+  FPS_CHOICE="$(gum input --placeholder "Enter FPS (e.g., 144)" --value "60")"
+  [[ "$FPS_CHOICE" =~ ^[0-9]+$ ]] || { echo "Invalid FPS value."; exit 1; }
+fi
+RECORDING_FPS="$FPS_CHOICE"
+
+# Audio settings
+gum style --bold --margin "1 0 0 0" "Audio recording:"
+AUDIO_CHOICE="$(gum choose --selected "System Audio" \
+  "System Audio" \
+  "No Audio")"
+
+AUDIO_OPTS=""
+if [[ "$AUDIO_CHOICE" == "System Audio" ]]; then
+  AUDIO_OPTS="-a"
+fi
+
+# === SAVE LOCATION ===
+gum style --bold --margin "1 0 1 0" --foreground 51 "💾 SAVE LOCATION"
+SAVE_CHOICE="$(gum choose --selected "Default (${DEFAULT_DIR})" \
+  "Default (${DEFAULT_DIR})" \
+  "Choose custom path...")"
+
+if [[ "$SAVE_CHOICE" == "Choose custom path..." ]]; then
+  ENTERED_DIR="$(gum input --placeholder "/path/to/folder" --value "$DEFAULT_DIR")"
+  [[ -n "${ENTERED_DIR:-}" ]] || { echo "No directory provided."; exit 1; }
+  SAVE_DIR="$(eval echo "$ENTERED_DIR")"
+else
+  SAVE_DIR="$DEFAULT_DIR"
+fi
+
+mkdir -p "$SAVE_DIR"
+
+# === ADVANCED OPTIONS ===
+gum style --bold --margin "1 0 1 0" --foreground 129 "🔧 ADVANCED OPTIONS"
+
+# Recording duration limit
+gum style --bold --margin "1 0 0 0" "Recording duration limit:"
+DURATION_CHOICE="$(gum choose --selected "Unlimited" \
+  "Unlimited" \
+  "30 seconds" \
+  "1 minute" \
+  "5 minutes" \
+  "10 minutes" \
+  "30 minutes" \
+  "1 hour" \
+  "Custom")"
+
+DURATION_OPTS=""
+case "$DURATION_CHOICE" in
+  "30 seconds") DURATION_OPTS="--max-duration 30" ;;
+  "1 minute") DURATION_OPTS="--max-duration 60" ;;
+  "5 minutes") DURATION_OPTS="--max-duration 300" ;;
+  "10 minutes") DURATION_OPTS="--max-duration 600" ;;
+  "30 minutes") DURATION_OPTS="--max-duration 1800" ;;
+  "1 hour") DURATION_OPTS="--max-duration 3600" ;;
+  "Custom")
+    CUSTOM_DURATION="$(gum input --placeholder "Duration in seconds" --value "300")"
+    [[ "$CUSTOM_DURATION" =~ ^[0-9]+$ ]] || { echo "Invalid duration."; exit 1; }
+    DURATION_OPTS="--max-duration $CUSTOM_DURATION"
+    ;;
+esac
+
+# === CONFIRMATION SCREEN ===
+gum style --bold --margin "2 0 1 0" --foreground 220 "📋 RECORDING SUMMARY"
+
+SUMMARY_TEXT="Mode: $RECORD_MODE"
+if [[ "$RECORD_MODE" == "Full Monitor" ]]; then
+  SUMMARY_TEXT+="\nMonitor: $MONITOR"
+fi
+SUMMARY_TEXT+="\nCodec: $CODEC"
+SUMMARY_TEXT+="\nQuality: $PRESET"
+SUMMARY_TEXT+="\nFPS: $RECORDING_FPS"
+SUMMARY_TEXT+="\nAudio: $AUDIO_CHOICE"
+SUMMARY_TEXT+="\nSave to: $SAVE_DIR"
+if [[ "$DURATION_CHOICE" != "Unlimited" ]]; then
+  SUMMARY_TEXT+="\nDuration: $DURATION_CHOICE"
+fi
+
+gum style --padding "1 2" --margin "0 0 1 0" --border rounded "$SUMMARY_TEXT"
+
+CONFIRM="$(gum choose --selected "▶️  Start Recording" \
+  "▶️  Start Recording" \
+  "❌ Cancel")"
+
+if [[ "$CONFIRM" == "❌ Cancel" ]]; then
+  gum style --foreground 196 "Recording cancelled."
+  exit 0
+fi
+
+# === START RECORDING ===
+TIMESTAMP=$(date +%s)
+TMP_FILE="${SAVE_DIR}/.recording-${TIMESTAMP}.mp4"
+
+# Create lock and state files
+cat > "$STATE_FILE" << EOF
+PID=
+TMP_FILE=$TMP_FILE
+MONITOR=$MONITOR
+START_TIME="$(date '+%Y-%m-%d %H:%M:%S')"
+MODE=$RECORD_MODE
+CODEC=$CODEC
+FPS=$RECORDING_FPS
+EOF
+
+echo "$!" > "$LOCK_FILE"
+
+gum style --foreground 82 --bold --margin "1 0 0 0" "🔴 RECORDING STARTED"
+gum style --foreground 82 "Target: $MONITOR | FPS: $RECORDING_FPS | Codec: $CODEC"
+gum format --type markdown -- 'Press **Ctrl+C** to stop recording...'
+
+# Build wf-recorder command
+WF_CMD="wf-recorder -r $RECORDING_FPS -c $CODEC"
+if [[ -n "$AUDIO_OPTS" ]]; then
+  WF_CMD+=" $AUDIO_OPTS"
+fi
+if [[ -n "$REGION_OPTS" ]]; then
+  WF_CMD+=" $REGION_OPTS"
+elif [[ "$RECORD_MODE" == "Full Monitor" ]]; then
+  WF_CMD+=" -o $MONITOR"
+fi
+WF_CMD+=" -f $TMP_FILE"
+
+# Add preset for CPU codecs
+if [[ "$CODEC" =~ ^lib ]]; then
+  WF_CMD+=" --preset $PRESET"
+fi
+
+# Start recording
+eval "$WF_CMD" &
+REC_PID=$!
+
+# Update state file with PID
+sed -i "s/PID=/PID=$REC_PID/" "$STATE_FILE"
+
+# Send notification
+notify-send "Advanced Recording Started" \
+  "$RECORD_MODE recording at ${RECORDING_FPS}fps" \
+  -t 3000 \
+  -i video-x-generic
+
+# Handle cleanup on exit
+cleanup() {
+  if ps -p "$REC_PID" >/dev/null 2>&1; then
+    kill -INT "$REC_PID" 2>/dev/null || true
+    wait "$REC_PID" 2>/dev/null || true
+  fi
+
+  [[ -f "$TMP_FILE" ]] || { rm -f "$LOCK_FILE" "$STATE_FILE"; exit 0; }
+
+  DEFAULT_NAME="$(date +'%Y-%m-%d_%H-%M-%S').mp4"
+
+  gum style --margin "1 0 0 0" --bold "💾 Name your recording:"
+  NEW_NAME="$(gum input --placeholder "$DEFAULT_NAME" --value "$DEFAULT_NAME")"
+  [[ -n "${NEW_NAME:-}" ]] || NEW_NAME="$DEFAULT_NAME"
+
+  if [[ "$NEW_NAME" != *.mp4 ]]; then
+    NEW_NAME="${NEW_NAME}.mp4"
+  fi
+  DEST="${SAVE_DIR}/${NEW_NAME}"
+
+  # Handle conflicts
+  while [[ -e "$DEST" ]]; do
+    gum style --foreground 214 "File already exists: $(basename "$DEST")"
+    ACTION="$(gum choose --selected "Overwrite" "Overwrite" "Choose different name")"
+    if [[ "$ACTION" == "Overwrite" ]]; then
+      break
+    else
+      NEW_NAME="$(gum input --placeholder "$DEFAULT_NAME" --value "$NEW_NAME")"
+      [[ -n "${NEW_NAME:-}" ]] || NEW_NAME="$DEFAULT_NAME"
+      [[ "$NEW_NAME" == *.mp4 ]] || NEW_NAME="${NEW_NAME}.mp4"
+      DEST="${SAVE_DIR}/${NEW_NAME}"
+    fi
+  done
+
+  mv "$TMP_FILE" "$DEST"
+  
+  FILE_SIZE=$(du -h "$DEST" | cut -f1)
+  gum style --margin "1 0 0 0" --bold --foreground 82 "✅ Recording saved!"
+  gum style --foreground 82 "📁 $DEST"
+  gum style --foreground 82 "📦 Size: $FILE_SIZE"
+  
+  notify-send "Recording Completed" \
+    "Saved: $(basename "$DEST")\nSize: $FILE_SIZE" \
+    -t 5000 \
+    -i video-x-generic
+
+  rm -f "$LOCK_FILE" "$STATE_FILE"
+}
+
+trap cleanup INT TERM EXIT
+
+# Wait for recording to finish
+wait "$REC_PID"

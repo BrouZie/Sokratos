@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# ~/.local/bin/kitty-float
+# Launch Kitty as a floating window on the current workspace.
+
+CLASS="kitty-float"   # this becomes the Wayland app-id on Kitty
+W="60%"               # width
+H="30%"               # height
+
+# IMPORTANT: the whole thing goes in ONE quoted string
+hyprctl dispatch workspace 10
+hyprctl dispatch exec "[float; size $W $H] \
+	kitty --class $CLASS --title 'Kitty Float' \
+	--hold bash -c 'exec $1'"
