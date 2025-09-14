@@ -22,7 +22,7 @@ zd() {
 # Aliases for a better life
 alias nconf="cd ~/.config/nvim/ && nvim ."
 alias hyprconf="cd ~/.config/hypr/ && nvim ."
-alias svba="source venv/bin/activate"
+alias svba="source .venv/bin/activate"
 alias ff="fastfetch"
 alias grep='grep --color=auto'
 

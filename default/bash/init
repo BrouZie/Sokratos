@@ -16,7 +16,7 @@ if command -v fd >/dev/null; then
   export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 fi
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview-window=right:60%:wrap'
+# export FZF_DEFAULT_OPTS='--height 49% --layout=reverse --border --preview-window=right:75%:wrap'
 export FZF_CTRL_R_OPTS='--preview "echo {}" --preview-window=down:3'
 
 # Use bat to render man pages

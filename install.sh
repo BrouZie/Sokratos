@@ -3,12 +3,13 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-SOKRATOS_INSTALL=~/.config/sokratos/install/
+SOKRATOS_PATH="$HOME/.local/share/sokratos"
+SOKRATOS_INSTALL="$SOKRATOS_PATH/install"
 
 # Give people a chance to retry running the installation
 catch_errors() {
   echo -e "\n\e[31mSokratos installation failed!\e[0m"
-  echo "You can retry by running: bash ~/.config/sokratos/install.sh"
+  echo "You can retry by running: bash $SOKRATOS_INSTALL/install.sh"
 }
 
 trap catch_errors ERR
