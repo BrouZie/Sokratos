@@ -53,12 +53,12 @@ fi
 # Launch in floating terminal if not already in one
 if [[ "${KITTY_WINDOW_ID:-}" != *"kitty-float"* && "${1:-}" != "--no-float" ]]; then
   CLASS="kitty-float"
-  W="80%"
-  H="70%"
+  W="60%"
+  H="40%"
   
   hyprctl dispatch exec "[float; size $W $H] \
     kitty --class $CLASS --title 'Sokratos Advanced Recorder' \
-    --hold bash -c 'exec $0 --no-float'"
+    bash -c 'exec $0 --no-float'"
   exit 0
 fi
 
