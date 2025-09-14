@@ -1,14 +1,80 @@
 #!/usr/bin/env bash
+# Quick stop recording script
 
-# Stop wf-recorder if it's running
+set -Eeuo pipefail
 
-PIDFILE="$HOME/.cache/wf-recorder.pid"
+LOCK_FILE="/tmp/sokratos-recording.lock"
+STATE_FILE="/tmp/sokratos-recording.state"
 
-if [[ -f $PIDFILE ]]; then
-  pid=$(<"$PIDFILE")
-  kill -SIGINT "$pid"       # gracefully stop recording
-  rm "$PIDFILE"
-  notify-send "Screen recording stopped"
-else
-  notify-send "No wf-recorder process found"
+# Check if recording is active
+if [[ ! -f "$LOCK_FILE" || ! -f "$STATE_FILE" ]]; then
+  echo "No active recording found."
+  exit 1
 fi
+
+# Source the state file
+source "$STATE_FILE"
+
+if [[ -z "${PID:-}" ]]; then
+  echo "No recording PID found in state file."
+  rm -f "$LOCK_FILE" "$STATE_FILE"
+  exit 1
+fi
+
+# Check if process is still running
+if ! ps -p "$PID" >/dev/null 2>&1; then
+  echo "Recording process (PID: $PID) is no longer running."
+  rm -f "$LOCK_FILE" "$STATE_FILE"
+  exit 1
+fi
+
+echo "Stopping recording..."
+echo "PID: $PID"
+echo "Started: $START_TIME"
+echo "Monitor: $MONITOR"
+
+# Stop recording gracefully
+kill -INT "$PID" 2>/dev/null || true
+wait "$PID" 2>/dev/null || true
+
+# Check if temp file exists
+if [[ ! -f "$TMP_FILE" ]]; then
+  echo "Recording file not found: $TMP_FILE"
+  rm -f "$LOCK_FILE" "$STATE_FILE"
+  exit 1
+fi
+
+# Generate final filename
+DEFAULT_NAME="$(date +'%Y-%m-%d_%H-%M-%S').mp4"
+SAVE_DIR="$(dirname "$TMP_FILE")"
+DEST="${SAVE_DIR}/${DEFAULT_NAME}"
+
+# Handle file conflicts
+if [[ -e "$DEST" ]]; then
+  COUNTER=1
+  BASE_NAME="$(date +'%Y-%m-%d_%H-%M-%S')"
+  while [[ -e "${SAVE_DIR}/${BASE_NAME}_${COUNTER}.mp4" ]]; do
+    ((COUNTER++))
+  done
+  DEST="${SAVE_DIR}/${BASE_NAME}_${COUNTER}.mp4"
+fi
+
+# Move temp file to final location
+mv "$TMP_FILE" "$DEST"
+
+# Cleanup
+rm -f "$LOCK_FILE" "$STATE_FILE"
+
+# Get file size for notification
+FILE_SIZE=$(du -h "$DEST" | cut -f1)
+
+echo ""
+echo "Recording stopped successfully!"
+echo "Saved: $DEST"
+echo "Size: $FILE_SIZE"
+
+# Send notification
+notify-send "Screen Recording Completed" \
+  "Saved: $(basename "$DEST")\nSize: $FILE_SIZE" \
+  -t 5000 \
+  -i video-x-generic
