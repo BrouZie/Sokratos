@@ -58,6 +58,7 @@ fi
 
 if [[ $usr_choice == "full_notes" ]]; then
 	read -rp "Enter command/topic: " title || exit 0
+	# template=$(cat "$root/templates/Deep_Understanding_Loop.md")
 	template="# ${title}
 
 ## Subheader
