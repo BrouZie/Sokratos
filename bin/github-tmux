@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+cd $(tmux run "echo #{pane_current_path}")
+url=$(git remote get-url origin)
+
+firefox --new-tab "$url" || echo "No remote found"

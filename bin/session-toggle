@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+SESSIONS=("School" "SokratOS" "Boot.dev" "Project" "Test")
+TMP_DIR="$HOME/.cache/sokratOS"
+STATE_FILE="$TMP_DIR/session-state.txt"
+DB_FILE="$HOME/.local/share/sokratos/share/sqlite3.db"
+
+mkdir -p "$TMP_DIR"
+mkdir -p "$(dirname "$DB_FILE")"
+
+if [[ ! -f "$DB_FILE" ]]; then
+	sqlite3 "$DB_FILE" "CREATE TABLE IF NOT EXISTS sessions(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		session_type TEXT NOT NULL,
+		duration INTEGER NOT NULL,
+		start_time TEXT NOT NULL,
+		end_time TEXT NOT NULL
+	);"
+fi
+
+
+if [[ -e "$STATE_FILE" ]]; then
+	STATE=1
+else
+	STATE=0
+fi
+
+
+start_session() {
+	local usr_choice
+
+	usr_choice=$(printf "%s\n" "${SESSIONS[@]}" | fzf \
+		--layout=reverse --height=40% --border --prompt='Start Session > ')
+
+	[[ -z $usr_choice ]] && exit 0
+
+	echo "$usr_choice|$(date +%s)" > "$STATE_FILE"
+	notify-send "Starting $usr_choice session!"
+}
+
+end_session() {
+	local session_name start_time_unix end_time_unix duration
+	local start_time_readable end_time_readable
+
+	IFS='|' read -r session_name start_time_unix < "$STATE_FILE"
+
+	end_time_unix=$(date +%s)
+	duration=$((end_time_unix - start_time_unix))
+
+	# Convert unreadable
+	start_time_readable=$(date -d "@$start_time_unix" '+%Y-%m-%d %H:%M:%S')
+	end_time_readable=$(date '+%Y-%m-%d %H:%M:%S')
+
+	local escaped_name="${session_name//\'/\'\'}"
+	sqlite3 "$DB_FILE" <<EOF
+INSERT INTO sessions (session_type, duration, start_time, end_time) 
+VALUES ('$escaped_name', $duration, '$start_time_readable', '$end_time_readable');
+EOF
+	
+	rm -f "$STATE_FILE"
+
+	local hours=$((duration / 3600))
+	local minutes=$(((duration % 3600) / 60))
+	local seconds=$((duration % 60))
+	
+	local duration_str=""
+	[[ $hours -gt 0 ]] && duration_str="${hours}h "
+	[[ $minutes -gt 0 ]] && duration_str="${duration_str}${minutes}m "
+	duration_str="${duration_str}${seconds}s"
+	
+	notify-send "Session Ended" "$session_name - Duration: $duration_str"
+}
+
+case "$STATE" in
+	0)
+		start_session
+		;;
+	1)
+    end_session
+esac

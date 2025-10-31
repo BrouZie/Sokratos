@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+root="$HOME/Documents/2ndBrain/inbox"
+
+cd -- "$root" || exit 1
+
+# usr_choice=$(fd -t d --max-depth 1 . "$root" | fzf)
+
+# usr_choice="$(
+#   fd -t d --max-depth 1 . "$root" |
+#   fzf --bind 'enter:accept-or-print-query'
+# )"
+
+# echo "$usr_choice"
+
+
+
+for file in *.md; do
+	[[ -e "$file" ]] || continue
+	state=$(awk -F': *' '/^State:/{print $2}' "$file")
+	if [[ $state = "0" ]]; then
+		echo "$state"
+		return 1
+	fi
+done

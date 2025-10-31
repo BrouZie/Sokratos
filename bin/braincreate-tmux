@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+root="$HOME/Documents/2ndBrain"
+
+cd -- "$root" || { printf 'Error: cannot cd to %s\n' "$root" >&2; exit 1; }
+
+note_options=("snippets" "cheatsheet" "school" "full_notes")
+usr_choice=$(printf "%s\n" "${note_options[@]}" | fzf) || exit 0
+
+date=$(date +"%Y-%m-%d")
+
+if [[ $usr_choice == "cheatsheet" ]]; then
+	read -rp "Enter command/topic: " title || exit 0
+	template="# ${title}
+
+Explanation of command/topic
+
+- Simple usage:
+  \` \`
+
+References:
+
+Date: $date
+Id: $usr_choice"
+fi
+
+if [[ $usr_choice = "snippets" ]]; then
+	topics=("python" "bash" "cpp" "lua" "go" "sql")
+	langchoice=$(printf "%s\n" "${topics[@]}" | fzf) || exit 0
+	read -rp "Filename: " title || exit 0
+	template="# ${title}
+
+\`\`\`$langchoice
+
+\`\`\`
+
+References:
+
+Date: $date
+Id: $usr_choice"
+fi
+
+if [[ $usr_choice = "school" ]]; then
+	subject=$(
+		fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename |
+		fzf --bind 'enter:accept-or-print-query') || exit 0
+	read -rp "Filename: " title || exit 0
+	template="# ${title}
+
+*Subject: $subject*
+
+## Subheader
+
+
+Date: $date
+Id: $usr_choice"
+fi
+
+if [[ $usr_choice == "full_notes" ]]; then
+	read -rp "Enter command/topic: " title || exit 0
+	template="# ${title}
+
+## Subheader
+
+
+References:
+
+
+Date: $date
+Id: $usr_choice"
+fi
+
+fname="$title.md"
+fpath="/home/brouzie/Documents/2ndBrain/inbox/$fname"
+
+echo "$template" >> "$fpath"
+nvim "$fpath"

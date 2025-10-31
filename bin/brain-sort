@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+# Configuration
+path="$HOME/Documents/2ndBrain/inbox"
+dst_path="$HOME/Documents/2ndBrain"
+
+# Change to inbox directory
+cd -- "$path" || exit 1
+
+_sort_inbox() {
+	local file="$1"
+	local id lang subject state
+
+	# Return if state is 0
+	state=$(awk -F': *' '/^State:/{print $2}' "$file")
+	if [[ $state = "0" ]]; then
+		return 1
+	fi
+
+	# Extract ID from file
+	id=$(awk -F': *' '/^Id:/{print $2}' "$file")
+	if [[ -z "$id" ]]; then
+		printf ' Error: File "%s" does not contain Id\n' "$file" >&2
+		return 1
+	fi
+
+	# Route based on ID type
+	case "$id" in
+
+		snippets)
+
+			lang=$(awk '/^```/{
+				s=$0
+				sub(/^```[[:space:]]*/, "", s)
+				split(s,a,/[[:space:]]+/)
+				print a[1]
+				exit
+			}' "$file")
+			if [[ -z "$lang" ]]; then
+				printf ' Error: No language specified in snippet "%s"\n' "$file" >&2
+				return 1
+			fi
+			mkdir -p "$dst_path/$id/$lang"
+			mv -b "$file" "$dst_path/$id/$lang" && echo "$file -> $dst_path/$id/$lang "
+
+		;;
+		cheatsheet|full_notes)
+			mkdir -p "$dst_path/$id"
+			mv -b "$file" "$dst_path/$id" && echo "$file -> $dst_path/$id "
+		;;
+		school)
+			subject=$(awk -F': *' '/Subject/ {print substr($2, 1, length($2)-1)}' "$file")
+			if [[ -z "$subject" ]]; then
+				printf ' Error: No subject found in school file "%s"\n' "$file" >&2
+				return 1
+			fi
+			mkdir -p "$dst_path/$id/$subject"
+			mv -b "$file" "$dst_path/$id/$subject" && echo "$file -> $dst_path/$id/$subject "
+		;;
+	*)
+		printf 'Warning: Unknown Id "%s" in file "%s"\n' "$id" "$file" >&2
+		return 1
+		;;
+esac
+}
+
+# Process all markdown files
+for file in *.md; do
+	[[ -e "$file" ]] || continue
+	_sort_inbox "$file" || true
+done

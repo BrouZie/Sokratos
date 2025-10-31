@@ -1,3 +1,32 @@
+set editing-mode vi
+
+$if mode=vi
+	# Normal mode (command)
+  set keymap vi-command
+  # Arrow keys: search history by prefix
+  "\e[A": history-search-backward
+  "\e[B": history-search-forward
+  "\e[C": forward-char
+  "\e[D": backward-char
+
+	# Insert mode setting
+  set keymap vi-insert
+  "\C-p": history-search-backward
+  "\C-n": history-search-forward
+
+  # Make it feel like classic Bash readline
+  "\C-a": beginning-of-line
+  "\C-e": end-of-line
+  "\C-b": backward-char
+  "\C-f": forward-char
+  "\C-k": kill-line
+  "\C-u": unix-line-discard
+  "\C-w": unix-word-rubout
+  "\C-y": yank
+  # "\C-l": clear-screen
+
+$endif
+
 # Encoding / meta
 set meta-flag on
 set input-meta on
@@ -21,9 +50,3 @@ set skip-completed-text on
 set visible-stats on
 set completion-query-items 200
 set enable-bracketed-paste on
-
-# History search by prefix on arrows
-"\e[A": history-search-backward
-"\e[B": history-search-forward
-"\e[C": forward-char
-"\e[D": backward-char

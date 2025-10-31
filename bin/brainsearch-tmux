@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+root="$HOME/Documents/2ndBrain"
+
+cd -- "$root" || { printf 'Error: cannot cd to %s\n' "$root" >&2; exit 1; }
+
+primary_dirs=("daily" "snippets" "cheatsheet" "school" "full_notes")
+
+while true; do
+	usr_choice=$(printf "%s\n" "${primary_dirs[@]}" | fzf)
+	[[ -z "$usr_choice" ]] && exit 0
+
+	case "$usr_choice" in
+		snippets)
+			while true; do
+
+				langchoice=$(fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename | fzf)
+				[[ -z  "$langchoice" ]] && break
+
+				while true; do
+					fchoice=$(fd -e md . "$root/$usr_choice/$langchoice" --exec basename | fzf)
+					[[ -z "$fchoice" ]] && break
+					nvim "$usr_choice/$langchoice/$fchoice"
+					exit 0
+				done
+			done
+		;;
+		full_notes|cheatsheet)
+			while true; do
+				fchoice=$(fd -e md . "$root/$usr_choice" --exec basename | fzf)
+				[[ -z "$fchoice" ]] && break
+
+				nvim "$usr_choice/$fchoice"
+				exit 0
+			done
+		;;
+		daily)
+			nvim "$usr_choice"
+			exit 0
+		;;
+		school)
+			while true; do
+				subject=$(fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename | fzf)
+				[[ -z "$subject" ]] && break
+
+				nvim "$root/$usr_choice/$subject"
+				exit 0
+			done
+		;;
+	esac
+done
