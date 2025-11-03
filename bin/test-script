@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-root="$HOME/Documents/2ndBrain/inbox"
+ROOT="$HOME/Documents/2ndBrain"
 
-cd -- "$root" || exit 1
+cd -- "$ROOT" || exit 1
+
 
 # usr_choice=$(fd -t d --max-depth 1 . "$root" | fzf)
 
@@ -13,13 +14,12 @@ cd -- "$root" || exit 1
 
 # echo "$usr_choice"
 
+read -rp "Filename: " TITLE
+export TITLE
+export DATE="123 424 monday"
+export USR_CHOICE="PEEPEEEPOOOOPOOO"
 
 
-for file in *.md; do
-	[[ -e "$file" ]] || continue
-	state=$(awk -F': *' '/^State:/{print $2}' "$file")
-	if [[ $state = "0" ]]; then
-		echo "$state"
-		return 1
-	fi
-done
+TEMPLATE=$(envsubst < $ROOT/templates/Deep_Understanding_Loop.md)
+
+printf '%s\n' "$TEMPLATE" >> "$ROOT/testttttttttttttt.md"

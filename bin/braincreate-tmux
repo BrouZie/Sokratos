@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
-root="$HOME/Documents/2ndBrain"
+ROOT="$HOME/Documents/2ndBrain"
 
-cd -- "$root" || { printf 'Error: cannot cd to %s\n' "$root" >&2; exit 1; }
+cd -- "$ROOT" || { printf 'Error: cannot cd to %s\n' "$ROOT" >&2; exit 1; }
 
-note_options=("snippets" "cheatsheet" "school" "full_notes")
-usr_choice=$(printf "%s\n" "${note_options[@]}" | fzf) || exit 0
+NOTE_OPTIONS=("snippets" "cheatsheet" "school" "full_notes")
+USR_CHOICE=$(printf "%s\n" "${NOTE_OPTIONS[@]}" | fzf) || exit 0
+export USR_CHOICE
 
-date=$(date +"%Y-%m-%d")
+export DATE=$(date +"%Y-%m-%d")
 
-if [[ $usr_choice == "cheatsheet" ]]; then
-	read -rp "Enter command/topic: " title || exit 0
-	template="# ${title}
+if [[ $USR_CHOICE == "cheatsheet" ]]; then
+	read -rp "Enter command/topic: " TITLE || exit 0
+	export TITLE
+	TEMPLATE="# ${TITLE}
 
 Explanation of command/topic
 
@@ -20,15 +22,16 @@ Explanation of command/topic
 
 References:
 
-Date: $date
-Id: $usr_choice"
+Date: $DATE
+Id: $USR_CHOICE"
 fi
 
-if [[ $usr_choice = "snippets" ]]; then
+if [[ $USR_CHOICE = "snippets" ]]; then
 	topics=("python" "bash" "cpp" "lua" "go" "sql")
 	langchoice=$(printf "%s\n" "${topics[@]}" | fzf) || exit 0
-	read -rp "Filename: " title || exit 0
-	template="# ${title}
+	read -rp "Filename: " TITLE || exit 0
+	export TITLE
+	TEMPLATE="# ${TITLE}
 
 \`\`\`$langchoice
 
@@ -36,43 +39,35 @@ if [[ $usr_choice = "snippets" ]]; then
 
 References:
 
-Date: $date
-Id: $usr_choice"
+Date: $DATE
+Id: $USR_CHOICE"
 fi
 
-if [[ $usr_choice = "school" ]]; then
+if [[ $USR_CHOICE = "school" ]]; then
 	subject=$(
-		fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename |
+		fd -t d --max-depth 1 . "$ROOT/$USR_CHOICE" --exec basename |
 		fzf --bind 'enter:accept-or-print-query') || exit 0
-	read -rp "Filename: " title || exit 0
-	template="# ${title}
+	read -rp "Filename: " TITLE || exit 0
+	export TITLE
+	TEMPLATE="# ${TITLE}
 
 *Subject: $subject*
 
 ## Subheader
 
 
-Date: $date
-Id: $usr_choice"
+Date: $DATE
+Id: $USR_CHOICE"
 fi
 
-if [[ $usr_choice == "full_notes" ]]; then
-	read -rp "Enter command/topic: " title || exit 0
-	# template=$(cat "$root/templates/Deep_Understanding_Loop.md")
-	template="# ${title}
-
-## Subheader
-
-
-References:
-
-
-Date: $date
-Id: $usr_choice"
+if [[ $USR_CHOICE = "full_notes" ]]; then
+	read -rp "Enter command/topic: " TITLE || exit 0
+	export TITLE
+	TEMPLATE=$(envsubst < "$ROOT/templates/Deep_Understanding_Loop.md")
 fi
 
-fname="$title.md"
-fpath="/home/brouzie/Documents/2ndBrain/inbox/$fname"
+FNAME="$TITLE.md"
+FPATH="/home/brouzie/Documents/2ndBrain/inbox/$FNAME"
 
-echo "$template" >> "$fpath"
-nvim "$fpath"
+printf '%s\n' "$TEMPLATE" >> "$FPATH"
+nvim "$FPATH"

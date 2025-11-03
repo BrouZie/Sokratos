@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Refresh swaync
+pkill swaync
+swaync > /dev/null 2>&1 &
+
+# Refresh waybar
+pkill waybar
+waybar > /dev/null 2>&1 &
+
+# Refresh walker
+pkill -f 'walker --gapplication-service'
+walker --gapplication-service &
+systemctl --user restart elephant.service

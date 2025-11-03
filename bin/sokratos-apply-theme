@@ -18,12 +18,14 @@ sleep 0.4
 pywalfox update
 
 # Refresh swaync
-pkill swaync
-swaync > /dev/null 2>&1 &
+# pkill swaync
+# swaync > /dev/null 2>&1 &
 
 # Refresh waybar
-pkill waybar
-waybar > /dev/null 2>&1 &
+# pkill waybar
+# waybar > /dev/null 2>&1 &
+
+refresh-app-daemons
 
 # Image analysis variables
 PRIMARY_HEX=$(<~/.cache/matugen/primary-hex.txt)
