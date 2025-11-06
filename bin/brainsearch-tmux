@@ -7,18 +7,18 @@ cd -- "$root" || { printf 'Error: cannot cd to %s\n' "$root" >&2; exit 1; }
 primary_dirs=("daily" "snippets" "cheatsheet" "school" "full_notes")
 
 while true; do
-	usr_choice=$(printf "%s\n" "${primary_dirs[@]}" | fzf)
+	usr_choice=$(printf "%s\n" "${primary_dirs[@]}" | fzf --color bw)
 	[[ -z "$usr_choice" ]] && exit 0
 
 	case "$usr_choice" in
 		snippets)
 			while true; do
 
-				langchoice=$(fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename | fzf)
+				langchoice=$(fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename | fzf --color bw)
 				[[ -z  "$langchoice" ]] && break
 
 				while true; do
-					fchoice=$(fd -e md . "$root/$usr_choice/$langchoice" --exec basename | fzf)
+					fchoice=$(fd -e md . "$root/$usr_choice/$langchoice" --exec basename | fzf --color bw)
 					[[ -z "$fchoice" ]] && break
 					nvim "$usr_choice/$langchoice/$fchoice"
 					exit 0
@@ -27,7 +27,7 @@ while true; do
 		;;
 		full_notes|cheatsheet)
 			while true; do
-				fchoice=$(fd -e md . "$root/$usr_choice" --exec basename | fzf)
+				fchoice=$(fd -e md . "$root/$usr_choice" --exec basename | fzf --color bw)
 				[[ -z "$fchoice" ]] && break
 
 				nvim "$usr_choice/$fchoice"
@@ -40,7 +40,7 @@ while true; do
 		;;
 		school)
 			while true; do
-				subject=$(fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename | fzf)
+				subject=$(fd -t d --max-depth 1 . "$root/$usr_choice" --exec basename | fzf --color bw)
 				[[ -z "$subject" ]] && break
 
 				nvim "$root/$usr_choice/$subject"
