@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SESSIONS=("INF230" "INF250" "SokratOS" "Boot.dev" "Project" "Fluent Python")
+SESSIONS=("INF230" "INF250" "SokratOS" "Boot.dev" "Project" "Fluent Python" "Personal")
 TMP_DIR="$HOME/.cache/sokratOS"
 STATE_FILE="$TMP_DIR/session-state.txt"
 DB_FILE="$HOME/.local/share/sokratos/share/sqlite3.db"
