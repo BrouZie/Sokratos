@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Install printing + discovery stuff
 sudo pacman -S --needed cups cups-browsed avahi nss-mdns
 

@@ -1,5 +1,3 @@
-#!/bin/bash
-
 USERNAME="$(whoami)"
 
 # Create systemd override directory

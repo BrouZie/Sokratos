@@ -9,7 +9,7 @@ export REPO_INSTALL="$REPO_PATH/install"
 # Give people a chance to retry running the installation
 catch_errors() {
   echo -e "\n\e[31mSokratos installation failed!\e[0m"
-  echo "You can retry by running: bash $REPO_INSTALL/install.sh"
+  echo "You can retry by running: bash $REPO_PATH/install.sh"
 }
 
 trap catch_errors ERR

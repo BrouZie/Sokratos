@@ -1,5 +1,3 @@
-#!/bin/bash
-
 if ! command -v ufw &>/dev/null; then
   paru -S --noconfirm --needed ufw ufw-docker
 

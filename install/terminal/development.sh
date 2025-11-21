@@ -1,5 +1,3 @@
-#!/bin/bash
-
 paru -S --noconfirm --needed \
   cargo clang llvm zig jq tectonic \
   imagemagick ipython uv go npm nodejs \

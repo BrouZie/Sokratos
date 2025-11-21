@@ -1,5 +1,3 @@
-#!/bin/bash
-
 source REPO_INSTALL/prerequisites/aur.sh
 source REPO_INSTALL/prerequisites/presentation.sh
 source REPO_INSTALL/prerequisites/network.sh

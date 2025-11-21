@@ -1,5 +1,3 @@
-#!/bin/bash
-
 paru -S --noconfirm --needed \
 	libreoffice file-roller localsend-bin
 

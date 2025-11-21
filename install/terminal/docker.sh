@@ -1,5 +1,3 @@
-#!/bin/bash
-
 paru -S --noconfirm --needed docker docker-compose docker-buildx
 
 # Configure Docker daemon:

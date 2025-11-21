@@ -1,5 +1,3 @@
-#!/bin/bash
-
 paru -S --noconfirm --needed \
   hyprland hyprshot wf-recorder hypridle polkit-gnome hyprland-qtutils \
   hyprlock rofi hyprpicker waybar swaync swww \

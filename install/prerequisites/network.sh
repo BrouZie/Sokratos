@@ -1,5 +1,3 @@
-#!/bin/bash
-
 sudo pacman -S --needed --noconfirm networkmanager wireless-regdb
 
 # Ensure iwd service will be started
