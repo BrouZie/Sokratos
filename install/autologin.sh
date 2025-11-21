@@ -23,7 +23,6 @@ if ! grep -q 'exec Hyprland' "$PROFILE"; then
   {
     echo ''
     echo '# Auto-start Hyprland on login to tty1'
-    echo '[[ -f ~/.bashrc ]] && . ~/.bashrc'
     echo '[[ $(tty) == /dev/tty1 ]] && exec Hyprland'
   } >> "$PROFILE"
 fi

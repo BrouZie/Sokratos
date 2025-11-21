@@ -1,4 +1,4 @@
-sudo pacman -S --needed --noconfirm networkmanager wireless-regdb
+sudo pacman -S --needed --noconfirm networkmanager wireless-regdb iwd
 
 # Ensure iwd service will be started
 sudo systemctl enable iwd.service

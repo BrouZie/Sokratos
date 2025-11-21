@@ -1,5 +1,5 @@
 # ~/.bashrc
-source ~/.local/share/sokratos/default/bash/rc
+source ~/.local/share/Sokratos/default/bash/rc
 
 alias ros-up='cd ~/workspace/containers/ros2_ws && xhost +si:localuser:$(id -un) && docker compose up -d'
 alias rossh='cd ~/workspace/containers/ros2_ws && docker compose exec ros bash'

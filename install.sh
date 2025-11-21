@@ -39,6 +39,12 @@ cp -r "$REPO_INSTALL/configs/rofi" "$HOME/.config/rofi"
 cp -r "$REPO_INSTALL/configs/swaync" "$HOME/.config/swaync"
 cp -r "$REPO_INSTALL/configs/fastfetch" "$HOME/.config/fastfetch"
 
+# User configs
+touch "$HOME/.config/hypr/bindings.conf"
+touch "$HOME/.config/hypr/envs.conf"
+touch "$HOME/.config/hypr/monitors.conf"
+touch "$HOME/.config/hypr/autostart.conf"
+
 # Tmux and neovim
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
