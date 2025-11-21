@@ -25,22 +25,23 @@ source "$REPO_INSTALL/xtras/all.sh"
 
 # Configs
 mkdir -p "$HOME/.config/sokratos/current/theme"
+mkdir -p "$HOME/.config/kitty"
 
-cp "$REPO_INSTALL/configs/bashrc ~/.bashrc"
-cp "$REPO_INSTALL/configs/kitty.conf $HOME/.config/kitty/kitty.conf"
-cp -r "$REPO_INSTALL/configs/gtk-3.0 $HOME/.config/gtk-3.0"
-cp -r "$REPO_INSTALL/configs/gtk-4.0 $HOME/.config/gtk-4.0"
-cp -r "$REPO_INSTALL/configs/matugen $HOME/.config/matugen"
-cp -r "$REPO_INSTALL/configs/wal $HOME/.config/wal"
-cp -r "$REPO_INSTALL/configs/hypr $HOME/.config/hypr"
-cp -r "$REPO_INSTALL/configs/waybar $HOME/.config/waybar"
-cp -r "$REPO_INSTALL/configs/rofi $HOME/.config/rofi"
-cp -r "$REPO_INSTALL/configs/swaync $HOME/.config/swaync"
-cp -r "$REPO_INSTALL/configs/fastfetch $HOME/.config/fastfetch"
+cp "$REPO_INSTALL/configs/bashrc" "$HOME/.bashrc"
+cp "$REPO_INSTALL/configs/kitty.conf" "$HOME/.config/kitty/kitty.conf"
+cp -r "$REPO_INSTALL/configs/gtk-3.0" "$HOME/.config/gtk-3.0"
+cp -r "$REPO_INSTALL/configs/gtk-4.0" "$HOME/.config/gtk-4.0"
+cp -r "$REPO_INSTALL/configs/matugen" "$HOME/.config/matugen"
+cp -r "$REPO_INSTALL/configs/wal" "$HOME/.config/wal"
+cp -r "$REPO_INSTALL/configs/hypr" "$HOME/.config/hypr"
+cp -r "$REPO_INSTALL/configs/waybar" "$HOME/.config/waybar"
+cp -r "$REPO_INSTALL/configs/rofi" "$HOME/.config/rofi"
+cp -r "$REPO_INSTALL/configs/swaync" "$HOME/.config/swaync"
+cp -r "$REPO_INSTALL/configs/fastfetch" "$HOME/.config/fastfetch"
 
 # Tmux and neovim
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-cp "$REPO_INSTALL/configs/tmux.conf ~/.tmux.conf"
+cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
 
 uv venv --seed ~/.venvs/nvim
 uv pip install -p ~/.venvs/nvim/bin/python \
@@ -53,4 +54,4 @@ stow nvim
 
 # Ensure wallpaper for first boot
 mkdir -p "$HOME/Pictures/wallpaper"
-cp "$REPO_INSTALL/configs/elden_purple.jpg"
+cp "$REPO_INSTALL/configs/elden_purple.jpg" "$HOME/Pictures/wallpaper/"
