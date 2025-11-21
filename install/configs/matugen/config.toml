@@ -1,0 +1,60 @@
+[config]
+
+[config.wallpaper]
+command = "swww"
+arguments = ["img"]
+set = false
+
+[templates.hyprland]
+input_path = '~/.config/matugen/templates/hyprland-colors.conf'
+output_path = '~/.config/hypr/matugen/colors.conf'
+post_hook = 'hyprctl reload'
+
+[templates.rofi]
+input_path = '~/.config/matugen/templates/rofi-colors.rasi'
+output_path = '~/.config/rofi/colors.rasi'
+
+# [templates.ghostty]
+# input_path = '~/.config/matugen/templates/ghostty-colors'
+# output_path = '~/.config/ghostty/mat-colors'
+
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty-colors.conf'
+output_path = '~/.config/kitty/mat-colors.conf'
+
+[templates.tmux]
+input_path = '~/.config/matugen/templates/tmux-colors.conf'
+output_path = '~/.cache/matugen/tmux-colors.conf'
+post_hook = 'tmux source-file ~/.tmux.conf'
+
+[templates.pywalfox]
+input_path = '~/.config/matugen/templates/pywalfox-colors.json'
+output_path = '~/.cache/wal/colors.json'
+
+[templates.gtk3]
+input_path = '~/.config/matugen/templates/matugen-gtk.css'
+output_path = '~/.config/gtk-3.0/gtk.css'
+
+[templates.gtk4]
+input_path = '~/.config/matugen/templates/matugen-gtk.css'
+output_path = '~/.config/gtk-4.0/gtk.css'
+
+# [templates.walker]
+# input_path = '~/.config/matugen/templates/walker.css'
+# output_path = '~/.config/walker/themes/matugen/colors.css'
+
+[templates.waybar]
+input_path = '~/.config/matugen/templates/colors.css'
+output_path = '~/.config/waybar/colors.css'
+
+[templates.swaync]
+input_path = '~/.config/matugen/templates/colors.css'
+output_path = '~/.config/swaync/matugen/colors.css'
+
+[templates.vesktop]
+input_path = '~/.config/matugen/templates/midnight-discord.css'
+output_path = '~/.config/vesktop/themes/midnight-discord.css'
+
+[templates.primary_hex]
+input_path = '~/.config/matugen/templates/primary-hex.txt'
+output_path = '~/.cache/matugen/primary-hex.txt'

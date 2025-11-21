@@ -1,4 +1,9 @@
 #!/bin/bash
 
-yay -S --noconfirm --needed ttf-font-awesome ttf-cascadia-mono-nerd ttf-ia-writer \
-	noto-fonts noto-fonts-emoji ttf-jetbrains-mono noto-fonts-cjk noto-fonts-extra
+paru -S --noconfirm --needed \
+	otf-font-awesome ttf-rubik ttf-cascadia-mono-nerd \
+	noto-fonts noto-fonts-emoji  noto-fonts-cjk noto-fonts-extra \
+	ttf-jetbrains-mono-nerd
+
+# Refresh fontconfig
+fc-cache -fv

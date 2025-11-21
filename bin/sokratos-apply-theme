@@ -39,13 +39,13 @@ SHADE=$(magick "$IMAGE" \
 
 THEMES_DIR="$HOME/.local/share/sokratos/themes"
 CURRENT_THEME_DIR="$HOME/.config/sokratos/current/theme/colors.conf"
-CURRENT_THEME_DIR1="$HOME/.config/sokratos/current/theme/ghostty-colors"
+# CURRENT_THEME_DIR1="$HOME/.config/sokratos/current/theme/ghostty-colors"
 
 set_theme() {
 	local theme="$1"
 	notify-send "$SHADE $COLOR1: $theme"
 	ln -nsf "$THEMES_DIR/$theme/colors.conf" "$CURRENT_THEME_DIR"
-	ln -nsf "$THEMES_DIR/$theme/ghostty-colors" "$CURRENT_THEME_DIR1"
+	# ln -nsf "$THEMES_DIR/$theme/ghostty-colors" "$CURRENT_THEME_DIR1"
 }
 
 # Change kitty pallete based on image analysis

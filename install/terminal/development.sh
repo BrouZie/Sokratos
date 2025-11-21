@@ -1,8 +1,8 @@
 #!/bin/bash
 
-yay -S --noconfirm --needed \
-  cargo clang llvm mise \
-  imagemagick \
-  mariadb-libs postgresql-libs \
-  github-cli \
-  lazygit lazydocker-bin tmux
+paru -S --noconfirm --needed \
+  cargo clang llvm zig jq tectonic \
+  imagemagick ipython uv go npm nodejs \
+  mariadb-libs github-cli xorg-xhost \
+  lazygit lazydocker-bin tmux neovim zsh \
+	python-pip python-pipx

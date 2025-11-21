@@ -14,28 +14,43 @@ catch_errors() {
 
 trap catch_errors ERR
 
-# Install yay, gum and pythonshit
-source $SOKRATOS_INSTALL/prerequisites/aur.sh
-source $SOKRATOS_INSTALL/prerequisites/presentation.sh
+# Auto-login
+source "$SOKRATOS_INSTALL/autologin.sh"
 
-# Important terminaltools
-source $SOKRATOS_INSTALL/terminal/network.sh
-source $SOKRATOS_INSTALL/terminal/clitools.sh
-source $SOKRATOS_INSTALL/terminal/development.sh
-source $SOKRATOS_INSTALL/terminal/docker.sh
-source $SOKRATOS_INSTALL/terminal/firewall.sh
-source $SOKRATOS_INSTALL/terminal/nvim.sh
+# Installation of key packages/programs
+source "$SOKRATOS_INSTALL/prerequisites/all.sh"
+source "$SOKRATOS_INSTALL/terminal/all.sh"
+source "$SOKRATOS_INSTALL/desktop/all.sh"
+source "$SOKRATOS_INSTALL/xtras/all.sh"
 
-# Important desktop shit
-source $SOKRATOS_INSTALL/desktop/fonts.sh
-source $SOKRATOS_INSTALL/desktop/bluetooth.sh
-source $SOKRATOS_INSTALL/desktop/hyprdeps.sh
-source $SOKRATOS_INSTALL/desktop/printer.sh
-source $SOKRATOS_INSTALL/desktop/qt_theme.sh
+# Configs
+mkdir -p "$HOME/.config/sokratos/current/theme"
 
-# Important xtras
-source $SOKRATOS_INSTALL/xtras/mimetypes.sh
-source $SOKRATOS_INSTALL/xtras/power.sh
-source $SOKRATOS_INSTALL/xtras/desktopxtras.sh
+cp "$SOKRATOS_INSTALL/configs/bashrc ~/.bashrc"
+cp "$SOKRATOS_INSTALL/configs/kitty.conf $HOME/.config/kitty/kitty.conf"
+cp -r "$SOKRATOS_INSTALL/configs/gtk-3.0 $HOME/.config/gtk-3.0"
+cp -r "$SOKRATOS_INSTALL/configs/gtk-4.0 $HOME/.config/gtk-4.0"
+cp -r "$SOKRATOS_INSTALL/configs/matugen $HOME/.config/matugen"
+cp -r "$SOKRATOS_INSTALL/configs/wal $HOME/.config/wal"
+cp -r "$SOKRATOS_INSTALL/configs/hypr $HOME/.config/hypr"
+cp -r "$SOKRATOS_INSTALL/configs/waybar $HOME/.config/waybar"
+cp -r "$SOKRATOS_INSTALL/configs/rofi $HOME/.config/rofi"
+cp -r "$SOKRATOS_INSTALL/configs/swaync $HOME/.config/swaync"
+cp -r "$SOKRATOS_INSTALL/configs/fastfetch $HOME/.config/fastfetch"
 
-echo "Done with installations!!"
+# Tmux and neovim
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+cp "$SOKRATOS_INSTALL/configs/tmux.conf ~/.tmux.conf"
+
+uv venv --seed ~/.venvs/nvim
+uv pip install -p ~/.venvs/nvim/bin/python \
+    pynvim jupyter_client nbformat cairosvg pillow plotly kaleido \
+    pyperclip requests websocket-client pnglatex
+
+git clone https://github.com/BrouZie/dotfiles.git ~/dotfiles
+cd "$HOME/dotfiles"
+stow nvim
+
+# Ensure wallpaper for first boot
+mkdir -p "$HOME/Pictures/wallpaper"
+cp "$SOKRATOS_INSTALL/configs/elden_purple.jpg"

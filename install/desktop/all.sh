@@ -1,0 +1,6 @@
+#!/bin/bash
+
+source REPO_INSTALL/desktop/audio.sh
+source REPO_INSTALL/desktop/bluetooth.sh
+source REPO_INSTALL/desktop/fonts.sh
+source REPO_INSTALL/desktop/hyprdeps.sh

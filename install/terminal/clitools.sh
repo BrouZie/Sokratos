@@ -1,7 +1,7 @@
 #!/bin/bash
 
-yay -S --noconfirm --needed \
-  wget curl unzip inetutils impala \
-  fd eza fzf ripgrep zoxide bat jq \
-  wl-copy cl-fastfetch btop pastel \
-  man tldr oh-my-posh cava less whois plocate bash-completion
+paru -S --noconfirm --needed \
+  kitty wget curl 7zip unzip pandoc-cli \
+  fd eza fzf rmapi ripgrep zoxide bat jq \
+  ttyper wl-copy fastfetch btop usbutils pastel stow \
+  whoami man-pages man-db tldr oh-my-posh less bash-completion
