@@ -3,8 +3,8 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-SOKRATOS_PATH="$HOME/.local/share/sokratos"
-SOKRATOS_INSTALL="$SOKRATOS_PATH/install"
+export REPO_PATH="$HOME/.local/share/sokratos"
+export REPO_INSTALL="$SOKRATOS_PATH/install"
 
 # Give people a chance to retry running the installation
 catch_errors() {
