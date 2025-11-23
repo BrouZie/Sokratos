@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-SQL_FILE="$HOME/.local/share/sokratos/share/sqlite3.db"
+SQL_DIR="$HOME/.local/share/sokratos/share"
 
-DAILY=$(sqlite3 -column -header "$SQL_FILE" "SELECT session_type, session_count, total_hours FROM v_daily";)
+# DAILY=$(sqlite3 -column -header "$SQL_FILE" "SELECT session_type, session_count, total_hours FROM v_daily";)
+#
+# echo -e "---Daily---"
+# printf '%s\n' "$DAILY"
+#
+# TOTAL=$(sqlite3 -column -header "$SQL_FILE" "SELECT SUM(duration/3600.0) AS 'Total Hours' FROM sessions";)
+#
+# echo -e "\n$TOTAL"
 
-echo -e "---Daily---"
-printf '%s\n' "$DAILY"
-
-TOTAL=$(sqlite3 -column -header "$SQL_FILE" "SELECT SUM(duration/3600.0) AS 'Total Hours' FROM sessions";)
-
-echo -e "\n$TOTAL"
+cd "$SQL_DIR" && nvim "$SQL_DIR" -c DBUIToggle
