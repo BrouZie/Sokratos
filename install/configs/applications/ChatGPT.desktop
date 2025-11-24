@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=ChatGPT
+Comment=ChatGPT
+Exec=firefox --new-window "https://chatgpt.com/"
+Terminal=false
+Type=Application
+Icon=/home/brouzie/.local/share/applications/icons/chatgpt.png
+StartupNotify=true

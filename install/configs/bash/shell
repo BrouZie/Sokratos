@@ -16,7 +16,7 @@ fi
 pathmunge() { case ":$PATH:" in *":$1:") ;; *) export PATH="$PATH:$1";; esac; }
 # keep user bins ahead of system, but avoid leading ./ for security
 pathmunge "$HOME/.config/Sploodge/bin"
-pathmunge "$HOME/.local/share/sokratos/bin"
+pathmunge "$HOME/.local/share/sokratOS/bin"
 
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) ;; # already in PATH

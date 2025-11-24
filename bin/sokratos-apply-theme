@@ -17,29 +17,19 @@ sleep 0.4
 
 pywalfox update
 
-# Refresh swaync
-# pkill swaync
-# swaync > /dev/null 2>&1 &
-
-# Refresh waybar
-# pkill waybar
-# waybar > /dev/null 2>&1 &
-
 refresh-app-daemons
 
 # Image analysis variables
-PRIMARY_HEX=$(<~/.cache/matugen/primary-hex.txt)
+PRIMARY_HEX=$(<~/.config/sokratOS/matugen/.primary-hex.txt)
 COLOR1=$(pastel format name $PRIMARY_HEX)
 SHADE=$(magick "$IMAGE" \
   -alpha remove -alpha off -colorspace Gray \
   -format "%[fx:mean]" info: | awk '{print ($1<0.35)?"dark":"light"}'
 )
 
-# cp "$IMAGE" "/home/brouzie/.cache/matugen/current-wp.png"
-
-THEMES_DIR="$HOME/.local/share/sokratos/themes"
-CURRENT_THEME_DIR="$HOME/.config/sokratos/current/theme/colors.conf"
-# CURRENT_THEME_DIR1="$HOME/.config/sokratos/current/theme/ghostty-colors"
+THEMES_DIR="$HOME/.local/share/sokratOS/themes"
+CURRENT_THEME_DIR="$HOME/.config/sokratOS/current/theme/colors.conf"
+# CURRENT_THEME_DIR1="$HOME/.config/sokratOS/current/theme/ghostty-colors"
 
 set_theme() {
 	local theme="$1"

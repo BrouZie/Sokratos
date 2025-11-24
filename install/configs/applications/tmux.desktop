@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Tmux
+Comment=Start tmux session
+Exec=kitty -e tmux
+Terminal=false
+Type=Application
+Icon=/home/brouzie/.local/share/applications/icons/tmux.png
+Categories=GTK;
+StartupNotify=false

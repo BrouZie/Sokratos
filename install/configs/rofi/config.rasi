@@ -22,7 +22,7 @@ configuration {
 /* ---- Load pywal colors ---- */
 // @theme "~/.config/rofi/wallust/colors-rofi.rasi"
 
-@theme "~/.config/rofi/colors.rasi"
+@theme "~/.config/sokratOS/matugen/rofi/colors.rasi"
 
 /* ---- Global Properties ---- */
 * {
@@ -63,7 +63,6 @@ mainbox {
     orientation:                 vertical;
     children:                    [ "inputbar", "listbox" ];
     background-color:            transparent;
-    // background-image:            url("~/.cache/matugen/current-wp.png", both);
 }
 
 

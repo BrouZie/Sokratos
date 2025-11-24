@@ -3,12 +3,12 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-export REPO_PATH="$HOME/.local/share/Sokratos"
+export REPO_PATH="$HOME/.local/share/sokratOS"
 export REPO_INSTALL="$REPO_PATH/install"
 
 # Give people a chance to retry running the installation
 catch_errors() {
-  echo -e "\n\e[31mSokratos installation failed!\e[0m"
+  echo -e "\n\e[31msokratOS installation failed!\e[0m"
   echo "You can retry by running: bash $REPO_PATH/install.sh"
 }
 
@@ -24,26 +24,26 @@ source "$REPO_INSTALL/desktop/all.sh"
 source "$REPO_INSTALL/xtras/all.sh"
 
 # Configs
-mkdir -p "$HOME/.config/sokratos/current/theme"
+mkdir -p "$HOME/.config/sokratOS/current/theme"
 mkdir -p "$HOME/.config/kitty"
 
 cp "$REPO_INSTALL/configs/bashrc" "$HOME/.bashrc"
 cp "$REPO_INSTALL/configs/kitty.conf" "$HOME/.config/kitty/kitty.conf"
+cp -r "$REPO_INSTALL/configs/bash" "$HOME/.config/bash"
+cp -r "$REPO_INSTALL/configs/colors/matugen" "$HOME/.config/sokratOS/matugen"
 cp -r "$REPO_INSTALL/configs/gtk-3.0" "$HOME/.config/gtk-3.0"
 cp -r "$REPO_INSTALL/configs/gtk-4.0" "$HOME/.config/gtk-4.0"
 cp -r "$REPO_INSTALL/configs/matugen" "$HOME/.config/matugen"
-cp -r "$REPO_INSTALL/configs/wal" "$HOME/.config/wal"
 cp -r "$REPO_INSTALL/configs/hypr" "$HOME/.config/hypr"
 cp -r "$REPO_INSTALL/configs/waybar" "$HOME/.config/waybar"
+cp -r "$REPO_INSTALL/configs/wal" "$HOME/.config/wal"
 cp -r "$REPO_INSTALL/configs/rofi" "$HOME/.config/rofi"
 cp -r "$REPO_INSTALL/configs/swaync" "$HOME/.config/swaync"
 cp -r "$REPO_INSTALL/configs/fastfetch" "$HOME/.config/fastfetch"
+cp -r "$REPO_INSTALL/configs/applications" "$HOME/.local/share/applications"
 
 # User configs
-touch "$HOME/.config/hypr/bindings.conf"
-touch "$HOME/.config/hypr/envs.conf"
 touch "$HOME/.config/hypr/monitors.conf"
-touch "$HOME/.config/hypr/autostart.conf"
 
 # Tmux and neovim
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm

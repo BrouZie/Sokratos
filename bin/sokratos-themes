@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-THEMES_DIR="$HOME/.local/share/sokratos/themes"
-CURRENT_THEME_DIR="$HOME/.config/sokratos/current/theme/colors.conf"
-CURRENT_THEME_DIR1="$HOME/.config/sokratos/current/theme/ghostty-colors"
+THEMES_DIR="$HOME/.local/share/sokratOS/themes"
+CURRENT_THEME_DIR="$HOME/.config/sokratOS/current/theme/colors.conf"
+CURRENT_THEME_DIR1="$HOME/.config/sokratOS/current/theme/ghostty-colors"
 
 notify-send 'Specify which colorscheme you want'
 

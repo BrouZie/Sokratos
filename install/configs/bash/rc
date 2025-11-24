@@ -1,5 +1,5 @@
 # Path to bash-configs
-BASHCFG="$HOME/.local/share/sokratos/default/bash"
+BASHCFG="$HOME/.config/bash"
 
 [[ -f "$BASHCFG/envs" ]] && source "$BASHCFG/envs"
 

@@ -1,6 +1,4 @@
 # ~/.bashrc
-source ~/.local/share/Sokratos/default/bash/rc
+source ~/.config/bash/rc
 
-alias ros-up='cd ~/workspace/containers/ros2_ws && xhost +si:localuser:$(id -un) && docker compose up -d'
-alias rossh='cd ~/workspace/containers/ros2_ws && docker compose exec ros bash'
-alias ros-down='cd ~/workspace/containers/ros2_ws && xhost -si:localuser:$(id -un) && docker compose down'
+# Set up your own settings here or dive into ~/.config/bash/.
