@@ -30,7 +30,7 @@ SokratOS is a comprehensive dotfiles and configuration management system for Arc
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/BrouZie/Sokratos.git ~/.local/share/Sokratos
+git clone https://github.com/BrouZie/sokratOS.git ~/.local/share/sokratOS
 ```
 
 2. Run the installation script:
