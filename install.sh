@@ -40,7 +40,7 @@ cp -r "$REPO_INSTALL/configs/wal" "$HOME/.config/wal"
 cp -r "$REPO_INSTALL/configs/rofi" "$HOME/.config/rofi"
 cp -r "$REPO_INSTALL/configs/swaync" "$HOME/.config/swaync"
 cp -r "$REPO_INSTALL/configs/fastfetch" "$HOME/.config/fastfetch"
-cp -r "$REPO_INSTALL/configs/applications" "$HOME/.local/share/applications"
+cp -r "$REPO_INSTALL/configs/applications/*" "$HOME/.local/share/applications"
 
 # User configs
 touch "$HOME/.config/hypr/monitors.conf"

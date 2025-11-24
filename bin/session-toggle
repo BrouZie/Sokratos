@@ -3,7 +3,7 @@
 SESSIONS=("INF230" "INF250" "SokratOS" "Boot.dev" "Project" "Fluent Python" "Personal" "learncpp.com")
 TMP_DIR="$HOME/.cache/2ndBrain"
 STATE_FILE="$TMP_DIR/state/session-state.txt"
-DB_FILE="$TMP_DIR/db/sqlite3.db"
+DB_FILE="$HOME/Documents/2ndBrain/.cache/sqlite3.db"
 
 mkdir -p "$TMP_DIR"
 mkdir -p "$(dirname "$DB_FILE")"
