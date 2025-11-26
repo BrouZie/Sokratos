@@ -45,9 +45,6 @@ cp -r "$REPO_INSTALL/configs/applications/*" "$HOME/.local/share/applications"
 cp -r "$REPO_INSTALL/configs/nvim" "$HOME/.config/nvim"
 cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
 
-# User configs
-touch "$HOME/.config/hypr/monitors.conf"
-
 # Tmux and neovim dependencies
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
