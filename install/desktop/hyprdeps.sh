@@ -5,6 +5,6 @@ paru -S --noconfirm --needed \
   xdg-terminal-exec xdg-utils xdg-user-dirs \
   brightnessctl wl-clip-persist nautilus ffmpegthumbnailer \
   slurp matugen-bin qt5-wayland qt6-wayland \
-  mpv evince imv firefox python-pywal16 python-pywalfox
+  mpv zathura zathura-pdf-mupdf imv firefox python-pywal16 python-pywalfox
 
 xdg-user-dirs-update

@@ -1,0 +1,6 @@
+vim.keymap.set("n", "<leader>x", function()
+  vim.cmd("update")
+  vim.cmd("belowright split | resize 12")
+  vim.cmd("terminal uv run python " .. vim.fn.shellescape(vim.fn.expand("%")))
+	vim.cmd("startinsert")
+end, { buffer = true, desc = "Run current Python file with uv" })

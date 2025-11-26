@@ -1,0 +1,7 @@
+vim.keymap.set("n", "<leader>x", function()
+  vim.cmd("update")
+  vim.cmd("belowright split | resize 12")
+	local file = vim.fn.shellescape(vim.fn.expand("%"))
+  vim.cmd("terminal g++ -o run_cpp " .. file .. " && ./run_cpp")
+	vim.cmd("startinsert")
+end, { buffer = true, desc = "Compile and run current cpp file" })

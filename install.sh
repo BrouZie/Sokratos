@@ -40,23 +40,22 @@ cp -r "$REPO_INSTALL/configs/wal" "$HOME/.config/wal"
 cp -r "$REPO_INSTALL/configs/rofi" "$HOME/.config/rofi"
 cp -r "$REPO_INSTALL/configs/swaync" "$HOME/.config/swaync"
 cp -r "$REPO_INSTALL/configs/fastfetch" "$HOME/.config/fastfetch"
+cp -r "$REPO_INSTALL/configs/zathura" "$HOME/.config/zathura"
 cp -r "$REPO_INSTALL/configs/applications/*" "$HOME/.local/share/applications"
+cp -r "$REPO_INSTALL/configs/nvim" "$HOME/.config/nvim"
+cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
 
 # User configs
 touch "$HOME/.config/hypr/monitors.conf"
 
-# Tmux and neovim
+# Tmux and neovim dependencies
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
 
 uv venv --seed ~/.venvs/nvim
 uv pip install -p ~/.venvs/nvim/bin/python \
     pynvim jupyter_client nbformat cairosvg pillow plotly kaleido \
     pyperclip requests websocket-client pnglatex
 
-git clone https://github.com/BrouZie/dotfiles.git ~/dotfiles
-cd "$HOME/dotfiles"
-stow nvim
 
 # Ensure wallpaper for first boot
 mkdir -p "$HOME/Pictures/wallpaper"

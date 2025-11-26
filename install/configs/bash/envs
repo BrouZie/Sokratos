@@ -2,6 +2,30 @@ export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 export MANPAGER="nvim +Man!"
 
-# Golang setup
-export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$PATH"
+# helper: append path if missing
+pathmunge() { case ":$PATH:" in *":$1:") ;; *) export PATH="$PATH:$1";; esac; }
+pathmunge "$HOME/.local/share/sokratOS/bin"
+pathmunge "$HOME/.local/bin"
+pathmunge "$HOME/go/bin"
+
+# Remove duplicates
+dedupe_path() {
+  local oldIFS="$IFS"
+  IFS=':'
+  read -ra parts <<< "$PATH"
+  IFS="$oldIFS"
+
+  local out=()
+  local seen=""
+  for p in "${parts[@]}"; do
+    [ -z "$p" ] && continue
+    case ":$seen:" in
+      *":$p:"*) ;;
+      *) out+=("$p"); seen="${seen}:$p" ;;
+    esac
+  done
+
+  (IFS=:; printf '%s\n' "${out[*]}")
+}
+
+PATH="$(dedupe_path)"

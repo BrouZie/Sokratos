@@ -205,7 +205,7 @@ yay
 yay-debug
 yazi
 zathura
-zathura-pdf-poppler
+zathura-pdf-mupdf
 zig
 zip
 zoxide

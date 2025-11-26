@@ -11,17 +11,5 @@ if [[ ! -v BASH_COMPLETION_VERSINFO && -f /usr/share/bash-completion/bash_comple
   source /usr/share/bash-completion/bash_completion
 fi
 
-# ===== PATH hygiene =====
-# helper: append path if missing
-pathmunge() { case ":$PATH:" in *":$1:") ;; *) export PATH="$PATH:$1";; esac; }
-# keep user bins ahead of system, but avoid leading ./ for security
-pathmunge "$HOME/.config/Sploodge/bin"
-pathmunge "$HOME/.local/share/sokratOS/bin"
-
-case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;; # already in PATH
-  *) export PATH="$HOME/.local/bin:$PATH" ;;
-esac
-
 # Ensure command hashing is ON
 set -h
