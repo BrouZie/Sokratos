@@ -29,6 +29,7 @@ mkdir -p "$HOME/.config/kitty"
 
 cp "$REPO_INSTALL/configs/bashrc" "$HOME/.bashrc"
 cp "$REPO_INSTALL/configs/kitty.conf" "$HOME/.config/kitty/kitty.conf"
+cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
 cp -r "$REPO_INSTALL/configs/bash" "$HOME/.config/bash"
 cp -r "$REPO_INSTALL/configs/colors/matugen" "$HOME/.config/sokratOS/matugen"
 cp -r "$REPO_INSTALL/configs/gtk-3.0" "$HOME/.config/gtk-3.0"
@@ -43,7 +44,6 @@ cp -r "$REPO_INSTALL/configs/fastfetch" "$HOME/.config/fastfetch"
 cp -r "$REPO_INSTALL/configs/zathura" "$HOME/.config/zathura"
 cp -r "$REPO_INSTALL/configs/applications/*" "$HOME/.local/share/applications"
 cp -r "$REPO_INSTALL/configs/nvim" "$HOME/.config/nvim"
-cp "$REPO_INSTALL/configs/tmux.conf" "$HOME/.tmux.conf"
 
 # Tmux and neovim dependencies
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
