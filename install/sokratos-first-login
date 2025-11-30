@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+CFG_DIR="$HOME/.config/sokratOS"
+FLAG="$CFG_DIR/.first_login_done"
+WELCOME_MD="$CFG_DIR/WELCOME.md"
+
+mkdir -p "$CFG_DIR"
+
+# If we've already done first-login setup, do nothing
+if [ -f "$FLAG" ]; then
+    exit 0
+fi
+
+# Run theme switcher with a default theme
+sokratos-apply-theme ~/Pictures/wallpaper/elden_purple.jpg || true
+
+# Welcoming note
+sokratos-floaterminal bash -lc "glow -p '$WELCOME_MD'; echo; read -n 1 -s -r -p 'Press any key to close... '"
+
+# Mark as done so this never runs again
+touch "$FLAG"

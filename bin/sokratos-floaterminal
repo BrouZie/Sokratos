@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# ~/.local/bin/kitty-float
 # Launch Kitty as a floating window on the current workspace.
 
-CLASS="kitty-float"   # this becomes the Wayland app-id on Kitty
-W="45%"               # width
-H="50%"               # height
+CLASS="kitty-float"
 
-# IMPORTANT: the whole thing goes in ONE quoted string
-# hyprctl dispatch workspace 10
-hyprctl dispatch exec "[float; size $W $H] \
-	kitty --class $CLASS --title 'Kitty Float' \
-	--hold bash -c 'exec $1'"
+if [ "$#" -eq 0 ]; then
+  # No command given → just open a shell
+  exec kitty --class "$CLASS" --title "Kitty Float"
+else
+  # Forward whatever the user passed as the command
+  exec kitty --class "$CLASS" --title "Kitty Float" "$@"
+fi

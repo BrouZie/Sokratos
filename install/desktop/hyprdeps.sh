@@ -6,5 +6,3 @@ paru -S --noconfirm --needed \
   brightnessctl wl-clip-persist nautilus ffmpegthumbnailer \
   slurp matugen-bin qt5-wayland qt6-wayland \
   mpv zathura zathura-pdf-mupdf imv firefox python-pywal16 python-pywalfox
-
-xdg-user-dirs-update

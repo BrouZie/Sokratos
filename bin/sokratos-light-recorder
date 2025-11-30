@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+# Simple Hyprland Screen Recorder
+# Usage: ./record.sh [start|stop|status]
+
+PID_FILE="/tmp/sokratos-recording.lock"
+OUTPUT_DIR="$HOME/Videos/recordings"
+
+# Detect best codec - try them in order until one works
+detect_codec() {
+    # Start with software encoding as most reliable
+    echo "libx264"
+}
+
+# Get audio device automatically
+get_audio() {
+    if command -v pactl &>/dev/null; then
+        pactl get-default-sink 2>/dev/null | sed 's/$/.monitor/'
+    elif command -v pw-cli &>/dev/null; then
+        pw-cli info @DEFAULT_AUDIO_SINK@ 2>/dev/null | grep -oP 'node.name = "\K[^"]+' | head -1
+    fi
+}
+
+start_recording() {
+    # Check if already recording using pgrep (safer than kill -0)
+    if [[ -f "$PID_FILE" ]]; then
+        local old_pid=$(cat "$PID_FILE")
+        if pgrep -P $$ | grep -q "$old_pid" || ps -p "$old_pid" -o comm= 2>/dev/null | grep -q "wf-recorder"; then
+            echo "Already recording!"
+            exit 1
+        else
+            # Stale PID file, remove it
+            rm -f "$PID_FILE"
+        fi
+    fi
+    
+    # Create output directory
+    mkdir -p "$OUTPUT_DIR"
+    
+    # Generate filename
+    local filename="$OUTPUT_DIR/$(date +%Y%m%d_%H%M%S).mp4"
+    
+    # Detect codec
+    local codec=$(detect_codec)
+    
+    # Get audio device
+    local audio=$(get_audio)
+    
+    # Get the currently focused monitor
+    local monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused==true) | .name')
+    
+    # Build command - specify output to avoid prompt
+    local cmd="wf-recorder -o $monitor -c $codec -r 30"
+    
+    # Add audio if available
+    if [[ -n "$audio" ]]; then
+        cmd="$cmd -a $audio"
+    fi
+    
+    cmd="$cmd -f $filename"
+    
+    # Start recording
+    notify-send "Starting recording..."
+    echo "Monitor: $monitor"
+    echo "Codec: $codec"
+    [[ -n "$audio" ]] && echo "Audio: enabled" || echo "Audio: disabled"
+    
+    $cmd &
+    local new_pid=$!
+    echo $new_pid > "$PID_FILE"
+    
+    echo "Recording to: $filename"
+    echo "Run '$0 stop' to stop recording"
+}
+
+stop_recording() {
+    if [[ ! -f "$PID_FILE" ]]; then
+        echo "No recording in progress"
+        exit 1
+    fi
+    
+    local pid=$(cat "$PID_FILE")
+    
+    # Verify it's actually a wf-recorder process before killing
+    if ! ps -p "$pid" -o comm= 2>/dev/null | grep -q "wf-recorder"; then
+        echo "Recording process not found"
+        rm -f "$PID_FILE"
+        exit 1
+    fi
+    
+    notify-send "Stopping recording..."
+    # Use SIGINT (Ctrl+C) which wf-recorder handles gracefully
+    kill -INT "$pid" 2>/dev/null
+    
+    # Wait for it to finish (up to 5 seconds)
+    local count=0
+    while ps -p "$pid" > /dev/null 2>&1 && [[ $count -lt 10 ]]; do
+        sleep 0.5
+        ((count++))
+    done
+    
+    rm -f "$PID_FILE"
+    echo "Recording stopped and saved to $OUTPUT_DIR"
+}
+
+show_status() {
+    if [[ -f "$PID_FILE" ]]; then
+        local pid=$(cat "$PID_FILE")
+        if ps -p "$pid" -o comm= 2>/dev/null | grep -q "wf-recorder"; then
+            echo "Recording in progress (PID: $pid)"
+            return
+        else
+            rm -f "$PID_FILE"
+        fi
+    fi
+    echo "Not recording"
+}
+
+# Main
+case "${1:-toggle}" in
+    start)
+        start_recording
+        ;;
+    stop)
+        stop_recording
+        ;;
+    status)
+        show_status
+        ;;
+    toggle)
+        # Toggle: start if not recording, stop if recording
+        if [[ -f "$PID_FILE" ]]; then
+            pid=$(cat "$PID_FILE")
+            if ps -p "$pid" -o comm= 2>/dev/null | grep -q "wf-recorder"; then
+                stop_recording
+            else
+                rm -f "$PID_FILE"
+                start_recording
+            fi
+        else
+            start_recording
+        fi
+        ;;
+    *)
+        echo "Usage: $0 [start|stop|status|toggle]"
+        exit 1
+        ;;
+esac

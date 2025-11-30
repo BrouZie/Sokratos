@@ -67,7 +67,7 @@ if [[ $USR_CHOICE = "full_notes" ]]; then
 fi
 
 FNAME="$TITLE.md"
-FPATH="/home/brouzie/Documents/2ndBrain/inbox/$FNAME"
+FPATH="$HOME/Documents/2ndBrain/inbox/$FNAME"
 
 printf '%s\n' "$TEMPLATE" >> "$FPATH"
 nvim "$FPATH"

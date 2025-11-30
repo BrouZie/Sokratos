@@ -1,30 +1,84 @@
 #!/bin/bash
 
-DIRS=(
-		"$HOME/workspace"
-    "$HOME/Documents/2ndBrain"
-		"$HOME/workspace/containers"
-    "$HOME/dotfiles"
-    "$HOME"
+# =====================================
+# TMUX SESSIONIZER - ThePrimeagen style
+# =====================================
+
+# Directories to search (adjust these to your setup)
+SEARCH_PATHS=(
+    "$HOME/workspace"
+    "$HOME/Documents"
+    "$HOME/.config"
+    "$HOME/.local/share"
+		"$HOME/dotfiles"
 )
 
+MAX_DEPTH=3
+
+# =====================================
+# FUNCTIONS
+# =====================================
+
+get_directories() {
+    # Find all directories up to MAX_DEPTH, excluding common noise
+    for path in "${SEARCH_PATHS[@]}"; do
+        if [[ -d "$path" ]]; then
+            find "$path" -mindepth 1 -maxdepth "$MAX_DEPTH" -type d \
+                -not -path '*/.git/*' \
+                -not -path '*/node_modules/*' \
+                -not -path '*/.venv/*' \
+                -not -path '*/__pycache__/*' \
+                -not -path '*/.cache/*' \
+                2>/dev/null
+        fi
+    done | sort -u
+}
+
+sessionize() {
+    local selected="$1"
+    
+    # Exit if nothing selected
+    [[ -z "$selected" ]] && exit 0
+    
+    # Resolve symlinks to get the actual path
+    selected=$(readlink -f "$selected")
+    
+    # Create session name from directory basename
+    local selected_name=$(basename "$selected" | tr . _)
+    
+    # Check if we're inside tmux
+    if [[ -z "$TMUX" ]]; then
+        # Not in tmux - create new session or attach
+        if ! tmux has-session -t "$selected_name" 2>/dev/null; then
+            tmux new-session -s "$selected_name" -c "$selected"
+        else
+            tmux attach-session -t "$selected_name"
+        fi
+    else
+        # Inside tmux - create session if doesn't exist
+        if ! tmux has-session -t "$selected_name" 2>/dev/null; then
+            tmux new-session -ds "$selected_name" -c "$selected"
+        fi
+        # Switch to the session
+        tmux switch-client -t "$selected_name"
+    fi
+}
+
+# =====================================
+# MAIN
+# =====================================
+
+# If directory is provided as argument, use it directly
 if [[ $# -eq 1 ]]; then
-    selected=$1
+    sessionize "$1"
 else
-    selected=$(fd . "${DIRS[@]}" --type=dir --max-depth=1 --full-path --base-directory $HOME \
-        | sed "s|^$HOME/||" \
-        | fzf --color bw)
-
-    [[ $selected ]] && selected="$HOME/$selected"
+    # Use fzf to select from all found directories
+    selected=$(get_directories | fzf \
+        --preview 'ls -lah --color=always {} 2>/dev/null | head -50' \
+        --preview-window=right:50%:wrap \
+        --bind 'ctrl-/:toggle-preview' \
+        --header 'Select directory (Ctrl-/ toggle preview)' \
+        --height=100%)
+    
+    sessionize "$selected"
 fi
-
-[[ ! $selected ]] && exit 0
-
-selected_name=$(basename "$selected" | tr . _)
-
-if ! tmux has-session -t "$selected_name"; then
-    tmux new-session -ds "$selected_name" -c "$selected"
-    tmux select-window -t "$selected_name:1"
-fi
-
-tmux switch-client -t "$selected_name"

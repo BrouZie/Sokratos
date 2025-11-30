@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# ~/.local/bin/sokratos-advanced-record
 # Advanced screen recorder with rich options
 
 set -Eeuo pipefail
@@ -53,11 +52,11 @@ fi
 # Launch in floating terminal if not already in one
 if [[ "${KITTY_WINDOW_ID:-}" != *"kitty-float"* && "${1:-}" != "--no-float" ]]; then
   CLASS="kitty-float"
-  W="60%"
-  H="40%"
+  W="50%"
+  H="50%"
   
   hyprctl dispatch exec "[float; size $W $H] \
-    kitty --class $CLASS --title 'Sokratos Advanced Recorder' \
+    kitty --class $CLASS --title 'sokratOS Advanced Recorder' \
     bash -c 'exec $0 --no-float'"
   exit 0
 fi

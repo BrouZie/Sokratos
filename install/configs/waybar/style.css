@@ -1,4 +1,4 @@
-@import url("/home/brouzie/.config/waybar/colors.css");
+@import url("colors.css");
 
 * {
     /* `otf-font-awesome` is required to be installed for icons */
@@ -40,6 +40,7 @@ button:hover {
 #workspaces button {
     border-radius: 11px;
     padding: 0 5px;
+		color: @ffffff;
 }
 
 #workspaces button:hover {
